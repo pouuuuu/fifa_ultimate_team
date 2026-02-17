@@ -14,10 +14,10 @@ public abstract class Player {
     private String surname;
     private int rating;
 
-    @Enumerated(EnumType.STRING)
     private CardType cardType;
 
     private String country;
+    private String club;
 
     private String playerImagePath;
     private String cardImagePath;

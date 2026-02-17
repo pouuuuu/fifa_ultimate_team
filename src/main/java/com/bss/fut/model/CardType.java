@@ -78,6 +78,15 @@ public enum CardType {
         return value;
     }
 
+    public static CardType fromValue(String value) {
+        for (CardType type : CardType.values()) {
+            if (type.value.equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("unknown card type: " + value);
+    }
+
     @Override
     public String toString() {
         return value;
