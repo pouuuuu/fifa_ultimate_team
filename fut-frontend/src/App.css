@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.player {
+  position: relative;
+  width: 320px;
+  height: 460px;
+  margin: 20px auto;
+  font-family: 'Lato', sans-serif;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.card-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.player-master-info {
+  position: absolute;
+  top: 70px;
+  left: 65px;
+  z-index: 10;
+  text-align: center;
+}
+
+.rating {
+  font-size: 35px;
+  line-height: 40px;
+  font-weight: 900;
+}
+
+.position {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.country, .club {
+  width: 35px;
+  margin-bottom: 3px;
+}
+
+.player-avatar {
+  position: absolute;
+  top: 50px;
+  left: 65px;
+  width: 210px;
+  z-index: 5;
+}
+
+.player-avatar img {
+  width: 100%;
+}
+
+.player-card-bottom {
+  position: absolute;
+  bottom: 100px;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.name {
+  font-size: 26px;
+  font-weight: 900;
+  width: 70%;
+  text-align: center;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+.attributs {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.stat-col {
+  display: flex;
+  flex-direction: column;
+  line-height: 22px;
+}
