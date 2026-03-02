@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
 #root {
-  max-width: 1280px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -58,9 +58,9 @@
 
 .player-avatar {
   position: absolute;
-  top: 50px;
-  left: 65px;
-  width: 210px;
+  top: 69px;
+  left: 85px;
+  width: 170px;
   z-index: 5;
 }
 
@@ -109,10 +109,8 @@
 
 .player-grid {
   display: grid;
-  /* Crée autant de colonnes de 320px que possible */
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 30px;
-  justify-items: center;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
 .pagination {
