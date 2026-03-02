@@ -1,6 +1,7 @@
 package com.bss.fut.service;
 
 import com.bss.fut.model.CardType;
+import com.bss.fut.dto.FilterOptionsDTO;
 import com.bss.fut.model.Player;
 import com.bss.fut.repository.PlayerRepository;
 import com.bss.fut.spec.PlayerSpecification;
@@ -11,11 +12,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 public class PlayerService {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    public FilterOptionsDTO getFilterOptions() {
+        List<String> clubs = playerRepository.findDistinctClubs();
+        List<String> nations = playerRepository.findDistinctNations();
+        List<CardType> cardTypes = Arrays.asList(CardType.values());
+
+        return new FilterOptionsDTO(clubs, nations, cardTypes);
+    }
 
     public Page<Player> searchPlayers(String name, String club, String nation, CardType cardType, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);

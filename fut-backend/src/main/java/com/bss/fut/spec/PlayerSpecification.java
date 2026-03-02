@@ -25,7 +25,7 @@ public class PlayerSpecification {
             }
 
             if (nation != null && !nation.isBlank()) {
-                predicates.add(criteriaBuilder.equal(root.get("nation"), nation));
+                predicates.add(criteriaBuilder.equal(root.get("country"), nation));
             }
 
             if (cardType != null) {

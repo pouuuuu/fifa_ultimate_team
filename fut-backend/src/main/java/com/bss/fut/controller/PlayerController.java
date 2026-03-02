@@ -1,6 +1,7 @@
 package com.bss.fut.controller;
 
 import com.bss.fut.model.CardType;
+import com.bss.fut.dto.FilterOptionsDTO;
 import com.bss.fut.model.Player;
 import com.bss.fut.repository.PlayerRepository;
 import com.bss.fut.service.PlayerService;
@@ -35,4 +36,10 @@ public class PlayerController {
 
         return playerService.searchPlayers(name, club, nation, cardType, page, size);
     }
+
+    @GetMapping("/filters")
+    public FilterOptionsDTO getFilters() {
+        return playerService.getFilterOptions();
+    }
+
 }
