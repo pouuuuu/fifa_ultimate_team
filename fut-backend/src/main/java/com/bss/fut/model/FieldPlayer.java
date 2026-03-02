@@ -25,3 +25,4 @@ public class FieldPlayer extends Player {
     private int def;
     private int phy;
 }
+

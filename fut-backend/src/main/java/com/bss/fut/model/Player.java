@@ -18,10 +18,4 @@ public abstract class Player {
 
     private String country;
     private String club;
-
-    private String playerImagePath;
-    private String cardImagePath;
-    private String clubImagePath;
-    private String countryImagePath;
-
 }
