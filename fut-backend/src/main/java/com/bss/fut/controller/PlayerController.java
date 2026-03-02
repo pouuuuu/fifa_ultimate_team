@@ -2,17 +2,27 @@ package com.bss.fut.controller;
 
 import com.bss.fut.model.CardType;
 import com.bss.fut.model.Player;
+import com.bss.fut.repository.PlayerRepository;
 import com.bss.fut.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/players")
 public class PlayerController {
 
     @Autowired
+    private PlayerRepository playerRepository;
+
+    @Autowired
     private PlayerService playerService;
+
+    @GetMapping
+    public Iterable<Player> getAllPlayers() {
+        return playerRepository.findAll();
+    }
 
     @GetMapping("/search")
     public Page<Player> search(

@@ -15,8 +15,8 @@ public class PlayerSpecification {
 
             if (name != null && !name.isBlank()) {
                 String namePattern = "%" + name.toLowerCase() + "%";
-                Predicate firstNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), namePattern);
-                Predicate lastNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), namePattern);
+                Predicate firstNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), namePattern);
+                Predicate lastNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("surname")), namePattern);
                 predicates.add(criteriaBuilder.or(firstNameMatch, lastNameMatch));
             }
 
