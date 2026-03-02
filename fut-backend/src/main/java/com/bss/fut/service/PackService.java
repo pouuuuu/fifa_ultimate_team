@@ -34,22 +34,17 @@ public class PackService {
             throw new RuntimeException("Crédits insuffisants !");
         }
 
-        // 1. Débiter l'utilisateur
         user.setCoins(user.getCoins() - 7500);
         userRepository.save(user);
 
         List<Player> packContent = new ArrayList<>();
 
-        // 2. Générer 12 cartes
         for (int i = 0; i < 12; i++) {
-            // La première carte est garantie "Rare" pour le suspense
             CardType type = (i == 0) ? drawRarity(true) : drawRarity(false);
 
-            // Tirage aléatoire en BDD selon la rareté
             Player p = getRandomPlayerByRarity(type);
             packContent.add(p);
 
-            // 3. Lier la carte à l'inventaire de l'utilisateur
             UserCard uc = new UserCard();
             uc.setOwner(user);
             uc.setPlayer(p);
@@ -63,13 +58,12 @@ public class PackService {
         double rand = Math.random() * 100;
         if (guaranteedRare) return CardType.GOLDRARE;
 
-        if (rand < 70) return CardType.GOLD;      // 70% Commun
-        if (rand < 95) return CardType.GOLDRARE;  // 25% Rare
-        return CardType.LEGEND;                     // 5% Légende (si présent dans votre enum)
+        if (rand < 70) return CardType.GOLD;
+        if (rand < 95) return CardType.GOLDRARE;
+        return CardType.LEGEND;
     }
 
     private Player getRandomPlayerByRarity(CardType type) {
-        // Utilisation d'une requête native pour le côté aléatoire (très performant)
         return playerRepository.findRandomPlayerByCardType(type.name());
     }
 }
