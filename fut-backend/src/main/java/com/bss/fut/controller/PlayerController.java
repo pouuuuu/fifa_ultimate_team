@@ -1,28 +1,28 @@
 package com.bss.fut.controller;
 
-import com.bss.fut.model.Goalkeeper;
+import com.bss.fut.model.CardType;
 import com.bss.fut.model.Player;
-import com.bss.fut.repository.GoalkeeperRepository;
-import com.bss.fut.repository.PlayerRepository;
+import com.bss.fut.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/players")
 public class PlayerController {
 
     @Autowired
-    private PlayerRepository playerRepository;
+    private PlayerService playerService;
 
-    @GetMapping
-    public Iterable<Player> getAllPlayers() {
-        return playerRepository.findAll();
-    }
+    @GetMapping("/search")
+    public Page<Player> search(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String club,
+            @RequestParam(required = false) String nation,
+            @RequestParam(required = false) CardType cardType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
 
-    @GetMapping("{id}")
-    public Player getOnePlayer(@PathVariable Long id) {
-        return playerRepository.findById(id).orElseThrow(() -> new RuntimeException("No player with id: " + id));
+        return playerService.searchPlayers(name, club, nation, cardType, page, size);
     }
 }
