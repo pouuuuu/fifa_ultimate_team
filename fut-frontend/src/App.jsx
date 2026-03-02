@@ -41,7 +41,7 @@ const CARD_COLORS = {
 function App() {
     return (
         <>
-            <h1>Accueil</h1>
+            <h1>Marché des Transferts</h1>
             <PlayerCatalog />
         </>
     )
@@ -53,19 +53,30 @@ function PlayerTemplate({ cardType, rating, position, country, club, player, nam
 
     return (
         <div className="player" style={{color : textColor}}>
-            <img className="card-bg" src={'/images/fonds/' + cardType + ".png"} alt="background" />
+            <img
+                className="card-bg"
+                src={'/images/fonds/' + cardType + ".png"}
+                alt="background"
+                loading="lazy"
+                decoding="async"
+            />
 
             <div className="player-master-info">
                 <div className="rating">{rating}</div>
                 <div className="position">{isGK ? "GK" : getShortPos(position)}</div>
                 <div className="icons">
-                    <img className="country" src={"/images/pays/" + country + ".png"} alt={country}/>
-                    <img className="club" src={"/images/clubs/" + club + ".png"} alt={club}/>
+                    <img className="country" src={"/images/pays/" + country + ".png"} alt={country} loading="lazy" />
+                    <img className="club" src={"/images/clubs/" + club + ".png"} alt={club} loading="lazy" />
                 </div>
             </div>
 
             <div className="player-avatar">
-                <img src={"/images/joueurs/" + player + ".png"} alt={name}/>
+                <img
+                    src={"/images/joueurs/" + player + ".png"}
+                    alt={name}
+                    loading="lazy"
+                    decoding="async"
+                />
             </div>
 
             <div className="player-card-bottom">
@@ -96,11 +107,25 @@ function PlayerCatalog() {
     const [clubFilter, setClubFilter] = useState('');
     const [nationFilter, setNationFilter] = useState('');
     const [typeFilter, setTypeFilter] = useState('');
+    const [options, setOptions] = useState({ clubs: [], nations: [], cardTypes: [] });
+
+    const [showClubs, setShowClubs] = useState(false);
+    const [showNations, setShowNations] = useState(false);
 
     useEffect(() => {
+        fetch('http://134.59.27.129:8080/api/players/filters')
+            .then(res => res.json())
+            .then(data => setOptions(data));
+    }, []);
+
+    useEffect(() => {
+        fetchPlayers();
+    }, [page, nameFilter, clubFilter, nationFilter, typeFilter]);
+
+    const fetchPlayers = async () => {
         const params = new URLSearchParams({
             page: page.toString(),
-            size: '24'
+            size: '12'
         });
 
         if (nameFilter) params.append('name', nameFilter);
@@ -108,18 +133,24 @@ function PlayerCatalog() {
         if (nationFilter) params.append('nation', nationFilter);
         if (typeFilter) params.append('cardType', typeFilter);
 
-        fetch(`http://134.59.27.129:8080/api/players/search?${params.toString()}`)
-            .then(res => res.json())
-            .then(data => {
-                setPlayers(data.content);
-                setTotalPages(data.totalPages);
-            })
-            .catch(err => console.error("Erreur API:", err));
-    }, [page, nameFilter, clubFilter, nationFilter, typeFilter]);
+        try {
+            const response = await fetch(`http://134.59.27.129:8080/api/players/search?${params.toString()}`);
+            const data = await response.json();
+            setPlayers(data.content);
+            setTotalPages(data.totalPages);
+        } catch (error) {
+            console.error("Erreur de récupération:", error);
+        }
+    };
 
     const handleFilterChange = (setter, value) => {
         setter(value);
         setPage(0);
+    };
+
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        window.scrollTo(0, 0);
     };
 
     return (
@@ -127,54 +158,73 @@ function PlayerCatalog() {
             <div className="filters">
                 <input
                     type="text"
-                    placeholder="Rechercher un joueur..."
+                    placeholder="Nom du joueur..."
                     value={nameFilter}
                     onChange={(e) => handleFilterChange(setNameFilter, e.target.value)}
                 />
-                <input
-                    type="text"
-                    placeholder="Club..."
-                    value={clubFilter}
-                    onChange={(e) => handleFilterChange(setClubFilter, e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder="Nation..."
-                    value={nationFilter}
-                    onChange={(e) => handleFilterChange(setNationFilter, e.target.value)}
-                />
+
+                <div className="autocomplete">
+                    <input
+                        type="text"
+                        placeholder="Chercher un club..."
+                        value={clubFilter}
+                        onFocus={() => setShowClubs(true)}
+                        onChange={(e) => handleFilterChange(setClubFilter, e.target.value)}
+                    />
+                    {showClubs && clubFilter && (
+                        <ul className="suggestions">
+                            {options.clubs
+                                .filter(c => c.toLowerCase().includes(clubFilter.toLowerCase()))
+                                .slice(0, 10)
+                                .map(c => (
+                                    <li key={c} onClick={() => { setClubFilter(c); setShowClubs(false); setPage(0); }}>{c}</li>
+                                ))}
+                        </ul>
+                    )}
+                </div>
+
+                <div className="autocomplete">
+                    <input
+                        type="text"
+                        placeholder="Chercher un pays..."
+                        value={nationFilter}
+                        onFocus={() => setShowNations(true)}
+                        onChange={(e) => handleFilterChange(setNationFilter, e.target.value)}
+                    />
+                    {showNations && nationFilter && (
+                        <ul className="suggestions">
+                            {options.nations
+                                .filter(n => n.toLowerCase().includes(nationFilter.toLowerCase()))
+                                .slice(0, 10)
+                                .map(n => (
+                                    <li key={n} onClick={() => { setNationFilter(n); setShowNations(false); setPage(0); }}>{n}</li>
+                                ))}
+                        </ul>
+                    )}
+                </div>
+
                 <select value={typeFilter} onChange={(e) => handleFilterChange(setTypeFilter, e.target.value)}>
-                    <option value="">Tous les types</option>
-                    <option value="goldrare">Or Rare</option>
-                    <option value="toty">TOTY</option>
-                    <option value="playermoments">Player Moments</option>
-                    {/* Ajouter les autres types ici */}
+                    <option value="">Toutes les raretés</option>
+                    {options.cardTypes.map(t => (
+                        <option key={t} value={t}>{t}</option>
+                    ))}
                 </select>
             </div>
 
-            <div className="player-grid">
-                {players.map(p => (
-                    <PlayerTemplate
-                        key={p.id}
-                        {...p}
-                        player={p.name+"%20"+p.surname}
-                        name={p.surname}
-                    />
-                ))}
+            <div className="player-grid" key={page}>
+                {players.length > 0 ? (
+                    players.map(p => (
+                        <PlayerTemplate key={p.id} {...p} player={p.name+"%20"+p.surname} name={p.surname} />
+                    ))
+                ) : (
+                    <p className="no-results">Aucun joueur trouvé.</p>
+                )}
             </div>
 
             <div className="pagination">
-                <button
-                    disabled={page === 0}
-                    onClick={() => { setPage(page - 1); window.scrollTo(0,0); }}>
-                    Précédent
-                </button>
-                <span>Page {page + 1} sur {totalPages}</span>
-                <button
-                    disabled={page >= totalPages - 1}
-                    onClick={() => { setPage(page + 1); window.scrollTo(0,0); }}>
-                    Suivant
-                </button>
+                <button disabled={page === 0} onClick={() => handlePageChange(page - 1)}>Précédent</button>
+                <span> Page {page + 1} sur {totalPages} </span>
+                <button disabled={page >= totalPages - 1} onClick={() => handlePageChange(page + 1)}>Suivant</button>
             </div>
         </div>
     );
@@ -185,6 +235,8 @@ const positionMap = {
     "Center Back": "CB", "Striker": "ST", "Center Forward": "CF",
     "Left Winger": "LW", "Right Winger": "RW", "Central Midfielder": "CM",
     "Central Defensive Midfielder": "CDM", "Right Midfielder": "RM",
+    "Left Wing Back": "LWB","Right Wing Back": "RWB",
+    "Left Forward": "LF", "Right Forward": "RF",
     "Left Midfielder": "LM", "Goalkeeper": "GK"
 };
 

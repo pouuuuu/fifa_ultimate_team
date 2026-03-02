@@ -109,7 +109,7 @@
 
 .player-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -135,3 +135,36 @@
   background: #555;
   cursor: not-allowed;
 }
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #333;
+  border: 1px solid #444;
+  z-index: 1000;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 0 0 5px 5px;
+}
+
+.suggestions li {
+  padding: 10px;
+  cursor: pointer;
+  color: white;
+  text-align: left;
+}
+
+.suggestions li:hover {
+  background: #00ff87;
+  color: #1a1a1a;
+}
+
