@@ -1,20 +1,7 @@
 import './App.css'
-import {useEffect, useState} from 'react';
+import React, { useState, useEffect } from 'react';
 
 function App() {
-    const [players, setPlayers] = useState([])
-
-    useEffect(() => {
-        fetch('http://localhost:8080/api/players')
-            .then(response => response.json())
-            .then(data => {
-                setPlayers(data)
-            })
-            .catch(error => {
-                console.error("Erreur Spring:", error)
-            })
-    }, [])
-
     return (
         <>
             <h1>Accueil</h1>
@@ -22,90 +9,44 @@ function App() {
                 <input type="text" name="titre" placeholder="Rechercher un joueur..."/>
                 <button type="submit">Rechercher</button>
             </div>
-            <details class="search-filters">
-                <summary>Filtres avancés</summary>
-                <div class="filters-content">
-                    <div class="filter-group">
-                        <label>Statistiques</label>
-                        <select name="type">
-                            <option>Pipi</option>
-                            <option>Caca</option>
-                            <option>Prout</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Pays</label>
-                        <select name="type">
-                            <option>Les Pays</option>
-                            <option>Sénécale</option>
-                            <option>Le Italie</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Rôle</label>
-                        <select name="type">
-                            <option>Goal</option>
-                            <option>Demandeur</option>
-                            <option>Défendeur</option>
-                        </select>
-                    </div>
-                </div>
-            </details>
-
-
-            <div className="player-list">
-                <h2>Liste des joueurs</h2>
-                <ul>
-                    <li>
-                        <div>
-                            <PlayerTemplate></PlayerTemplate>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+            <PlayerCatalog />
         </>
     )
 }
 
+function PlayerTemplate({ cardType, rating, position, country, club, player, name, pac, sho, pas, dri, def, phy, div, han, kic, ref, spe, pos }) {
+    const isGK = div !== undefined;
 
-function PlayerTemplate() {
     return (
         <div className="player">
-            <img
-                className="card-bg"
-                src={'../public/images/fonds/shapeshifters.png'}
-                alt={'card background'}
-            />
+            <img className="card-bg" src={'../public/images/fonds/' + cardType + ".png"} alt="card background" />
 
             <div className="player-master-info">
-                <div className="rating">99</div>
-                <div className="position">CF</div>
+                <div className="rating">{rating}</div>
+                <div className="position">{isGK ? "GK" : position}</div>
                 <div className="icons">
-                    <img className="country" src={"../public/images/pays/Argentina.png"} alt="Argentina"/>
-                    <img className="club" src={"../public/images/clubs/Paris%20Saint-Germain.png"} alt="PSG"/>
+                    <img className="country" src={"../public/images/pays/" + country + ".png"} alt={country}/>
+                    <img className="club" src={"../public/images/clubs/" + club + ".png"} alt={club}/>
                 </div>
             </div>
 
             <div className="player-avatar">
-                <img src={"../public/images/joueurs/Lionel%20Messi.png"} alt="Messi"/>
+                {console.log(player)}
+                <img src={"../public/images/joueurs/" + player + ".png"} alt={name}/>
             </div>
 
             <div className="player-card-bottom">
-                <div className="name">
-                    <span>MESSI</span>
-                </div>
+                <div className="name"><span>{name}</span></div>
                 <div className="attributs">
                     <div className="stat-col">
-                        <span>95 PAC</span>
-                        <span>98 SHO</span>
-                        <span>99 PAS</span>
+                        <span>{isGK ? div : pac} {isGK ? "DIV" : "PAC"}</span>
+                        <span>{isGK ? han : sho} {isGK ? "HAN" : "SHO"}</span>
+                        <span>{isGK ? kic : pas} {isGK ? "KIC" : "PAS"}</span>
                     </div>
                     <div className="stat-col">
-                        <span>99 DRI</span>
-                        <span>42 DEF</span>
-                        <span>78 PHY</span>
+                        <span>{isGK ? ref : dri} {isGK ? "REF" : "DRI"}</span>
+                        <span>{isGK ? spe : def} {isGK ? "SPE" : "DEF"}</span>
+                        <span>{isGK ? pos : phy} {isGK ? "POS" : "PHY"}</span>
                     </div>
                 </div>
             </div>
@@ -113,4 +54,48 @@ function PlayerTemplate() {
     );
 }
 
-export default App
+function PlayerCatalog() {
+    const [players, setPlayers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const playersPerPage = 8;
+
+    useEffect(() => {
+        fetch('http://134.59.27.129:8080/api/players')
+            .then(res => res.json())
+            .then(data => {
+                console.log("Joueurs reçus :", data);
+                setPlayers(data);
+            })
+            .catch(err => console.error("Erreur API:", err));
+    }, []);
+
+    const lastIndex = currentPage * playersPerPage;
+    const firstIndex = lastIndex - playersPerPage;
+    const currentPlayers = players.slice(firstIndex, lastIndex);
+
+    return (
+        <div className="catalog-container">
+            <div className="player-grid">
+                {currentPlayers.length > 0 ? (
+                    currentPlayers.map(p => (
+                        <PlayerTemplate key={p.id} {...p} player={p.name+"%20"+p.surname} name={p.surname} />
+                    ))
+                ) : (
+                    <p style={{color: 'white'}}>Chargement des joueurs ou liste vide...</p>
+                )}
+            </div>
+
+            <div className="pagination">
+                <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+                    Précédent
+                </button>
+                <span>Page {currentPage}</span>
+                <button disabled={lastIndex >= players.length} onClick={() => setCurrentPage(currentPage + 1)}>
+                    Suivant
+                </button>
+            </div>
+        </div>
+    );
+}
+
+export default App;
