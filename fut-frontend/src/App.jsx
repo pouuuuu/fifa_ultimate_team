@@ -38,6 +38,8 @@ const CARD_COLORS = {
     mlsobjective: "#aebebb"
 };
 
+const SERVER_URL = "http://localhost:8080"; // A modifier si spring en local ou distant
+
 function App() {
     return (
         <>
@@ -113,7 +115,7 @@ function PlayerCatalog() {
     const [showNations, setShowNations] = useState(false);
 
     useEffect(() => {
-        fetch('http://134.59.27.129:8080/api/players/filters')
+        fetch(SERVER_URL + '/api/players/filters')
             .then(res => res.json())
             .then(data => setOptions(data));
     }, []);
@@ -134,7 +136,7 @@ function PlayerCatalog() {
         if (typeFilter) params.append('cardType', typeFilter);
 
         try {
-            const response = await fetch(`http://134.59.27.129:8080/api/players/search?${params.toString()}`);
+            const response = await fetch(SERVER_URL + `/api/players/search?${params.toString()}`);
             const data = await response.json();
             setPlayers(data.content);
             setTotalPages(data.totalPages);
