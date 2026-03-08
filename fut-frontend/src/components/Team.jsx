@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { SERVER_URL } from '../config';
+import PlayerCard from './PlayerCard';
+import './Team.css';
 
 function Team() {
-    const userId = 1;
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userId = user ? user.id : null;
 
     const [team, setTeam] = useState(null);
     const [cards, setCards] = useState([]);
@@ -9,49 +13,45 @@ function Team() {
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
+        if (!userId) return;
+
         const fetchAllData = async () => {
             try {
-                const teamRes = await fetch(`http://localhost:8080/api/team/${userId}`);
-                let teamData = null;
-
+                const teamRes = await fetch(`${SERVER_URL}/api/team/${userId}`);
                 if (teamRes.ok) {
-                    teamData = await teamRes.json();
+                    const teamData = await teamRes.json();
                     setTeam(teamData);
 
                     const currentPositions = {};
                     if (teamData.players) {
                         teamData.players.forEach(userCard => {
-                            if (userCard.player.position) {
-                                currentPositions[userCard.player.position] = userCard.id;
-                            }
+                            const posKey = userCard.player.position || "GK";
+                            currentPositions[posKey] = userCard.id;
                         });
                     }
                     setSelectedPositions(currentPositions);
                 }
 
-                const cardsRes = await fetch(`http://localhost:8080/api/team/${userId}/cards`);
+                const cardsRes = await fetch(`${SERVER_URL}/api/team/${userId}/cards`);
                 if (cardsRes.ok) {
                     const cardsData = await cardsRes.json();
                     setCards(cardsData);
                 }
             } catch (error) {
-                console.error(error);
+                console.error("Erreur chargement:", error);
             }
         };
 
         fetchAllData();
-    }, [refreshTrigger]);
+    }, [refreshTrigger, userId]);
 
-    const handleSelectPlayer = (position, cardId) => {
-        setSelectedPositions(prev => ({
-            ...prev,
-            [position]: cardId
-        }));
+    const handleSelectPlayer = (posKey, cardId) => {
+        setSelectedPositions(prev => ({ ...prev, [posKey]: cardId }));
     };
 
     const saveTeam = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/team/${userId}/update`, {
+            const response = await fetch(`${SERVER_URL}/api/team/${userId}/update`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(selectedPositions)
@@ -69,67 +69,39 @@ function Team() {
         }
     };
 
-    const formationRows = [
-        ['LW', 'ST', 'RW'],
-        ['LM', 'CM', 'RM'],
-        ['LWB', 'LB', 'RB', 'RWB'],
-        ['CB']
+    const formation433 = [
+        { row: ['LW', 'ST', 'RW'] },
+        { row: ['CM', 'CM', 'CM'] },
+        { row: ['LB', 'CB', 'CB', 'RB'] },
+        { row: ['GK'] }
     ];
 
     return (
-        <div style={{ padding: '20px', color: 'white' }}>
+        <div className="team-container">
             <h1 style={{ textAlign: 'center' }}>Gestion de mon Équipe</h1>
 
-            <div style={{ backgroundColor: '#222', padding: '20px', borderRadius: '10px', marginBottom: '30px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <h2>Mon 11 de Départ</h2>
-                    <button
-                        onClick={saveTeam}
-                        style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
-                    >
-                        Sauvegarder la formation
+            <div className="pitch-container">
+                <div className="team-header">
+                    <h2>Mon 11 de Départ (4-3-3)</h2>
+                    <button onClick={saveTeam} className="save-btn">
+                        Sauvegarder
                     </button>
                 </div>
 
-                <div style={{
-                    backgroundColor: '#2e7d32',
-                    border: '2px solid white',
-                    borderRadius: '10px',
-                    padding: '30px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '40px',
-                    minHeight: '600px',
-                    justifyContent: 'space-around'
-                }}>
-                    {formationRows.map((row, rowIndex) => (
-                        <div key={rowIndex} style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
-                            {row.map(pos => {
+                <div className="football-pitch">
+                    {formation433.map((line, rowIndex) => (
+                        <div key={rowIndex} className="pitch-row">
+                            {line.row.map((pos, colIndex) => {
                                 const cardId = selectedPositions[pos];
                                 const card = cards.find(c => c.id === cardId) || team?.players?.find(c => c.id === cardId);
 
                                 return (
-                                    <div key={pos} style={{
-                                        width: '120px',
-                                        height: '160px',
-                                        backgroundColor: card ? '#111' : 'rgba(0,0,0,0.3)',
-                                        border: card ? '2px solid gold' : '2px dashed rgba(255,255,255,0.5)',
-                                        borderRadius: '10px',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        textAlign: 'center',
-                                        padding: '5px'
-                                    }}>
-                                        <p style={{ margin: '0 0 5px 0', color: card ? 'gold' : '#ccc', fontWeight: 'bold' }}>{pos}</p>
+                                    <div key={`${pos}-${colIndex}`} className={`player-slot ${!card ? 'slot-empty' : ''}`}>
+                                        <span className="pos-badge">{pos}</span>
                                         {card ? (
-                                            <>
-                                                <p style={{ margin: '5px 0', fontSize: '14px' }}><strong>{card.player.name}</strong></p>
-                                                <p style={{ margin: '5px 0', fontSize: '12px' }}>Note: {card.player.rating}</p>
-                                            </>
+                                            <PlayerCard player={card.player} />
                                         ) : (
-                                            <p style={{ margin: '0', fontSize: '12px', color: '#999' }}>Vide</p>
+                                            <span style={{ fontSize: '30px', color: 'rgba(255,255,255,0.2)' }}>+</span>
                                         )}
                                     </div>
                                 );
@@ -139,35 +111,29 @@ function Team() {
                 </div>
             </div>
 
-            <div style={{ backgroundColor: '#333', padding: '20px', borderRadius: '10px' }}>
-                <h2>Mon Club (Cartes Disponibles)</h2>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', marginTop: '20px' }}>
-                    {cards.length > 0 ? (
-                        cards.map(userCard => {
-                            const isSelected = selectedPositions[userCard.player.position] === userCard.id;
+            <div className="club-container">
+                <h2>Mon Club</h2>
+                <div className="club-grid">
+                    {cards.map(userCard => {
+                        const playerPosKey = userCard.player.position || "GK";
+                        const isSelected = selectedPositions[playerPosKey] === userCard.id;
 
-                            return (
-                                <div key={userCard.id} style={{ border: '1px solid #888', padding: '10px', borderRadius: '8px', width: '150px', backgroundColor: '#222', textAlign: 'center' }}>
-                                    <p style={{ margin: '5px 0', color: '#888' }}>{userCard.player.position}</p>
-                                    <p style={{ margin: '5px 0' }}><strong>{userCard.player.name}</strong></p>
-                                    <p style={{ margin: '5px 0' }}>Note: {userCard.player.rating}</p>
-
-                                    <button
-                                        onClick={() => handleSelectPlayer(userCard.player.position, userCard.id)}
-                                        style={{
-                                            marginTop: '10px', padding: '5px', width: '100%', cursor: 'pointer', border: 'none', borderRadius: '3px',
-                                            backgroundColor: isSelected ? '#ffc107' : '#007bff',
-                                            color: isSelected ? 'black' : 'white'
-                                        }}
-                                    >
-                                        {isSelected ? "Sélectionné" : `Placer`}
-                                    </button>
-                                </div>
-                            );
-                        })
-                    ) : (
-                        <p style={{ color: '#aaa' }}>Vous n'avez aucune carte dans votre club.</p>
-                    )}
+                        return (
+                            <div key={userCard.id} style={{ textAlign: 'center' }}>
+                                <PlayerCard player={userCard.player} />
+                                <button
+                                    onClick={() => handleSelectPlayer(playerPosKey, userCard.id)}
+                                    className="place-btn"
+                                    style={{
+                                        backgroundColor: isSelected ? '#ffc107' : '#007bff',
+                                        color: isSelected ? 'black' : 'white'
+                                    }}
+                                >
+                                    {isSelected ? "Sélectionné" : `Placer ${playerPosKey}`}
+                                </button>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

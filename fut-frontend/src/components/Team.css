@@ -1,0 +1,95 @@
+.team-container {
+    padding: 20px;
+    color: white;
+}
+
+.pitch-container {
+    background-color: #222;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.save-btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.football-pitch {
+    background-color: #2e7d32;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 40px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    min-height: 600px;
+}
+
+.pitch-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.player-slot {
+    width: 120px;
+    height: 170px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.slot-empty {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+}
+
+.pos-badge {
+    position: absolute;
+    top: -10px;
+    background: #111;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+    border: 1px solid gold;
+    z-index: 2;
+}
+
+.club-container {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.club-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    marginTop: 20px;
+}
+
+.place-btn {
+    margin-top: 10px;
+    padding: 8px;
+    width: 100%;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+}

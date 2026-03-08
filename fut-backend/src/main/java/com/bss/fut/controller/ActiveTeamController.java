@@ -1,10 +1,6 @@
 package com.bss.fut.controller;
 
-import com.bss.fut.model.ActiveTeam;
-import com.bss.fut.model.FieldPlayer;
-import com.bss.fut.model.Player;
-import com.bss.fut.model.Position;
-import com.bss.fut.model.UserCard;
+import com.bss.fut.model.*;
 import com.bss.fut.repository.ActiveTeamRepository;
 import com.bss.fut.repository.UserCardRepository;
 import com.bss.fut.repository.UserRepository;
@@ -37,45 +33,50 @@ public class ActiveTeamController {
     }
 
     @PostMapping("/{userId}/update")
-    public ResponseEntity<?> updateTeam(@PathVariable Long userId, @RequestBody Map<Position, Long> playerPositions) {
+    public ResponseEntity<?> updateTeam(@PathVariable Long userId, @RequestBody Map<String, Long> playerPositions) {
         if (playerPositions.size() > 11) {
-            return ResponseEntity.badRequest().body("Erreur : Une équipe ne peut pas avoir plus de 11 joueurs.");
+            return ResponseEntity.badRequest().body("Erreur : 11 joueurs maximum.");
         }
 
         ActiveTeam team = activeTeamRepository.findByUserId(userId).orElseGet(() -> {
-            ActiveTeam newTeam = new ActiveTeam();
-            userRepository.findById(userId).ifPresent(newTeam::setUser);
-            return newTeam;
+            ActiveTeam nt = new ActiveTeam();
+            userRepository.findById(userId).ifPresent(nt::setUser);
+            return nt;
         });
 
-        ArrayList<UserCard> newStarters = new ArrayList<>();
+        List<UserCard> newStarters = new ArrayList<>();
 
-        for (Map.Entry<Position, Long> entry : playerPositions.entrySet()) {
-            Position targetPosition = entry.getKey();
-            Long cardId = entry.getValue();
-
-            UserCard card = userCardRepository.findById(cardId).orElse(null);
+        for (Map.Entry<String, Long> entry : playerPositions.entrySet()) {
+            String posKey = entry.getKey();
+            UserCard card = userCardRepository.findById(entry.getValue()).orElse(null);
 
             if (card != null) {
                 Player player = card.getPlayer();
+                boolean isValid = false;
 
-                if (player instanceof FieldPlayer) {
-                    FieldPlayer fieldPlayer = (FieldPlayer) player;
-
-                    if (fieldPlayer.getPosition() != targetPosition) {
-                        return ResponseEntity.badRequest().body(
-                                "Erreur : " + player.getName() + " est un " + fieldPlayer.getPosition() +
-                                        " et ne peut pas être placé en " + targetPosition
-                        );
+                if (posKey.equals("GK")) {
+                    if (player instanceof Goalkeeper) {
+                        isValid = true;
+                    }
+                } else {
+                    Position targetPos = Position.valueOf(posKey);
+                    if (player instanceof FieldPlayer) {
+                        if (((FieldPlayer) player).getPosition() == targetPos) {
+                            isValid = true;
+                        }
                     }
                 }
 
+                if (!isValid) {
+                    return ResponseEntity.badRequest().body("Position invalide pour " + player.getName());
+                }
                 newStarters.add(card);
             }
         }
 
-        team.setPlayers(newStarters);
-        return ResponseEntity.ok(activeTeamRepository.save(team));
+        team.setPlayers(new ArrayList<>(newStarters));
+        activeTeamRepository.save(team);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{userId}/cards")
