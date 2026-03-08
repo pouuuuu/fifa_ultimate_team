@@ -58,28 +58,24 @@ public class MarketDataSeeder implements CommandLineRunner {
             return;
         }
 
-        // Génération de 10 cartes pour le vendeur
         for (int i = 0; i < 10; i++) {
             UserCard card = new UserCard();
             card.setOwner(seller);
             card.setPlayer(availablePlayers.get(i));
             card = userCardRepository.save(card);
 
-            // Mise en vente de 6 cartes sur les 10 possédées
             if (i < 6) {
-                int price = 500 + (i * 1500); // Prix progressifs : 500, 2000, 3500...
+                int price = 500 + (i * 1500);
                 marketService.createListing(seller.getId(), card.getId(), price);
             }
         }
 
-        // Génération de 10 cartes pour l'acheteur
         for (int i = 10; i < 20; i++) {
             UserCard card = new UserCard();
             card.setOwner(buyer);
             card.setPlayer(availablePlayers.get(i));
             card = userCardRepository.save(card);
 
-            // Mise en vente de 4 cartes sur les 10 possédées
             if (i < 14) {
                 int price = 1000 + ((i - 10) * 800);
                 marketService.createListing(buyer.getId(), card.getId(), price);
