@@ -33,4 +33,9 @@ public class UserController {
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
+
+    @GetMapping("/{id}/cards")
+    public ResponseEntity<?> getUserCards(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserCards(id));
+    }
 }
