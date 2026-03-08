@@ -78,10 +78,10 @@ function Team() {
 
     return (
         <div className="team-container">
-            <h1 style={{ textAlign: 'center' }}>Gestion de mon Équipe</h1>
+            <h1 className="team-title">Gestion de mon Équipe</h1>
 
-            <div className="pitch-container">
-                <div className="team-header">
+            <div className="pitch-wrapper">
+                <div className="pitch-header">
                     <h2>Mon 11 de Départ (4-3-3)</h2>
                     <button onClick={saveTeam} className="save-btn">
                         Sauvegarder
@@ -99,9 +99,11 @@ function Team() {
                                     <div key={`${pos}-${colIndex}`} className={`player-slot ${!card ? 'slot-empty' : ''}`}>
                                         <span className="pos-badge">{pos}</span>
                                         {card ? (
-                                            <PlayerCard player={card.player} />
+                                            <div className="card-scale-wrapper">
+                                                <PlayerCard player={card.player} />
+                                            </div>
                                         ) : (
-                                            <span style={{ fontSize: '30px', color: 'rgba(255,255,255,0.2)' }}>+</span>
+                                            <span className="pos-placeholder">{pos}</span>
                                         )}
                                     </div>
                                 );
@@ -111,19 +113,21 @@ function Team() {
                 </div>
             </div>
 
-            <div className="club-container">
+            <div className="club-inventory">
                 <h2>Mon Club</h2>
                 <div className="club-grid">
                     {cards.map(userCard => {
                         const playerPosKey = userCard.player.position || "GK";
-                        const isSelected = selectedPositions[playerPosKey] === userCard.id;
+                        const isSelected = Object.values(selectedPositions).includes(userCard.id);
 
                         return (
-                            <div key={userCard.id} style={{ textAlign: 'center' }}>
-                                <PlayerCard player={userCard.player} />
+                            <div key={userCard.id} className="club-card-item">
+                                <div className="card-scale-wrapper">
+                                    <PlayerCard player={userCard.player} />
+                                </div>
                                 <button
                                     onClick={() => handleSelectPlayer(playerPosKey, userCard.id)}
-                                    className="place-btn"
+                                    className={`select-btn ${isSelected ? 'is-selected' : ''}`}
                                     style={{
                                         backgroundColor: isSelected ? '#ffc107' : '#007bff',
                                         color: isSelected ? 'black' : 'white'

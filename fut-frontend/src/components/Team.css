@@ -35,18 +35,18 @@
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    min-height: 600px;
+    min-height: 500px; /* Réduit légèrement car les cartes sont plus petites */
 }
 
 .pitch-row {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 10px;
 }
 
 .player-slot {
-    width: 120px;
-    height: 170px;
+    width: 130px;  /* Ajusté pour la carte à 50% */
+    height: 180px; /* Ajusté pour la carte à 50% */
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -57,6 +57,18 @@
 .slot-empty {
     background-color: rgba(0, 0, 0, 0.3);
     border: 2px dashed rgba(255, 255, 255, 0.5);
+}
+
+/* Wrapper pour réduire la taille de la carte à 50% */
+.card-scale-wrapper {
+    transform: scale(0.5);
+    transform-origin: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 260px;  /* Taille d'origine approximative avant scale */
+    height: 360px; /* Taille d'origine approximative avant scale */
+    flex-shrink: 0;
 }
 
 .pos-badge {
@@ -79,17 +91,35 @@
 
 .club-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Adapté aux petites cartes */
     gap: 20px;
-    marginTop: 20px;
+    margin-top: 20px;
 }
 
-.place-btn {
-    margin-top: 10px;
+.club-card-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.pos-placeholder {
+    font-size: 20px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.select-btn {
+    margin-top: 5px;
     padding: 8px;
     width: 100%;
     cursor: pointer;
     border: none;
     border-radius: 4px;
     font-weight: bold;
+}
+
+.select-btn.is-selected {
+    background-color: #ffc107;
+    color: black;
 }
