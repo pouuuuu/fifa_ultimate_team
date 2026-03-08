@@ -50,7 +50,6 @@ public class ActiveTeamController {
             return nt;
         });
 
-        // Réinitialise les postes existants
         team.setLw(null);
         team.setSt(null);
         team.setRw(null);
@@ -83,7 +82,6 @@ public class ActiveTeamController {
                     return ResponseEntity.badRequest().body("Position invalide pour " + player.getSurname() + " " + player.getName());
                 }
 
-                // Affectation du joueur au bon poste (4-3-3)
                 switch (posKey) {
                     case "LW" -> team.setLw(card);
                     case "ST" -> team.setSt(card);
@@ -97,7 +95,6 @@ public class ActiveTeamController {
                     case "RB" -> team.setRb(card);
                     case "GK" -> team.setGk(card);
                     default -> {
-                        // Poste inconnu, on renvoie une erreur explicite
                         return ResponseEntity.badRequest().body("Poste inconnu : " + posKey);
                     }
                 }
@@ -106,7 +103,6 @@ public class ActiveTeamController {
             }
         }
 
-        // Garde aussi une liste des titulaires pour compatibilité (ex: calcul de note)
         team.setPlayers(new ArrayList<>(newStarters));
         activeTeamRepository.save(team);
         return ResponseEntity.ok().build();

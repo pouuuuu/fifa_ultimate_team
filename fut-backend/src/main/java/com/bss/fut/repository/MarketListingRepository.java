@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface MarketListingRepository extends JpaRepository<MarketListing, Long> {
 
-    // Récupère uniquement les offres non vendues
     List<MarketListing> findAllByActiveTrueOrderByCreatedAtDesc();
 }

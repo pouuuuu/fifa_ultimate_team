@@ -8,6 +8,6 @@ public record MarketListingDTO(
         int price,
         String sellerUsername,
         Long userCardId,
-        Player player, // Le joueur ne contient pas de données sensibles, on peut le renvoyer entier
+        Player player,
         LocalDateTime createdAt
 ) {}
