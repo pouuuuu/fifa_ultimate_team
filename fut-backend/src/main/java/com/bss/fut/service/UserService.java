@@ -3,11 +3,14 @@ package com.bss.fut.service;
 import com.bss.fut.dto.AuthRequestDTO;
 import com.bss.fut.dto.UserResponseDTO;
 import com.bss.fut.model.User;
+import com.bss.fut.model.UserCard;
+import com.bss.fut.repository.UserCardRepository;
 import com.bss.fut.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +21,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserCardRepository userCardRepository;
 
     public UserResponseDTO register(AuthRequestDTO request) {
         if (userRepository.findByUsername(request.username()).isPresent()) {
@@ -45,5 +51,9 @@ public class UserService {
         }
 
         return new UserResponseDTO(user.getId(), user.getUsername(), user.getCoins());
+    }
+
+    public List<UserCard> getUserCards(Long userId) {
+        return userCardRepository.findByOwnerId(userId);
     }
 }
