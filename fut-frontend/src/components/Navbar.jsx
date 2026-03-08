@@ -30,6 +30,7 @@ function Navbar() {
                 <a href="/inventory">Mon Inventaire</a>
                 <a href="/market">Marché</a>
                 <a href="/store">Boutique</a>
+                <a href="/team">Mon Equipe</a>
             </div>
 
             <div className="navbar-user-info">
