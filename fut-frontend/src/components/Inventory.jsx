@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { SERVER_URL } from '../config';
 import PlayerCard from './PlayerCard';
+import { POSITION_FILTERS, getShortPos } from '../utils';
 
 function Inventory() {
     const [userCards, setUserCards] = useState([]);
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(false);
     const user = JSON.parse(localStorage.getItem('user'));
-    const [filters, setFilters] = useState({ name: '', club: '', nation: '', cardType: '' });
+    const [filters, setFilters] = useState({
+        name: '',
+        club: '',
+        nation: '',
+        cardType: '',
+        positions: []
+    });
     const [options, setOptions] = useState({ clubs: [], nations: [], cardTypes: [] });
     const itemsPerPage = 12;
 
@@ -69,7 +76,15 @@ function Inventory() {
         const matchNation = !filters.nation || p.country === filters.nation;
         const matchType = !filters.cardType || p.cardType === filters.cardType;
 
-        return matchName && matchClub && matchNation && matchType;
+        const hasPositionFilter = filters.positions && filters.positions.length > 0;
+        let matchPosition = true;
+        if (hasPositionFilter) {
+            const isGK = p.div !== undefined;
+            const shortPos = isGK ? 'GK' : getShortPos(p.position);
+            matchPosition = filters.positions.includes(shortPos);
+        }
+
+        return matchName && matchClub && matchNation && matchType && matchPosition;
     });
 
     const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
@@ -83,6 +98,12 @@ function Inventory() {
 
     const handleFilterChange = (e, field) => {
         setFilters(prev => ({ ...prev, [field]: e.target.value }));
+        setPage(0);
+    };
+
+    const handlePositionsChange = (e) => {
+        const selected = Array.from(e.target.selectedOptions).map(opt => opt.value);
+        setFilters(prev => ({ ...prev, positions: selected }));
         setPage(0);
     };
 
@@ -114,6 +135,16 @@ function Inventory() {
                         <select value={filters.cardType} onChange={(e) => handleFilterChange(e, 'cardType')}>
                             <option value="">Toutes les raretés</option>
                             {options.cardTypes?.map(ct => <option key={ct} value={ct}>{ct}</option>)}
+                        </select>
+                        <select
+                            multiple
+                            size={5}
+                            value={filters.positions}
+                            onChange={handlePositionsChange}
+                        >
+                            {POSITION_FILTERS.map(pos => (
+                                <option key={pos} value={pos}>{pos}</option>
+                            ))}
                         </select>
                     </div>
                     <div className="player-grid">

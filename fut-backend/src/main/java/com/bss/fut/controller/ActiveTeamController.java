@@ -44,6 +44,19 @@ public class ActiveTeamController {
             return nt;
         });
 
+        // Réinitialise les postes existants
+        team.setLw(null);
+        team.setSt(null);
+        team.setRw(null);
+        team.setCm1(null);
+        team.setCm2(null);
+        team.setCm3(null);
+        team.setLb(null);
+        team.setCb1(null);
+        team.setCb2(null);
+        team.setRb(null);
+        team.setGk(null);
+
         List<UserCard> newStarters = new ArrayList<>();
 
         for (Map.Entry<String, Long> entry : playerPositions.entrySet()) {
@@ -63,10 +76,31 @@ public class ActiveTeamController {
                 if (!isValid) {
                     return ResponseEntity.badRequest().body("Position invalide pour " + player.getSurname() + " " + player.getName());
                 }
+
+                // Affectation du joueur au bon poste (4-3-3)
+                switch (posKey) {
+                    case "LW" -> team.setLw(card);
+                    case "ST" -> team.setSt(card);
+                    case "RW" -> team.setRw(card);
+                    case "CM1" -> team.setCm1(card);
+                    case "CM2" -> team.setCm2(card);
+                    case "CM3" -> team.setCm3(card);
+                    case "LB" -> team.setLb(card);
+                    case "CB1" -> team.setCb1(card);
+                    case "CB2" -> team.setCb2(card);
+                    case "RB" -> team.setRb(card);
+                    case "GK" -> team.setGk(card);
+                    default -> {
+                        // Poste inconnu, on renvoie une erreur explicite
+                        return ResponseEntity.badRequest().body("Poste inconnu : " + posKey);
+                    }
+                }
+
                 newStarters.add(card);
             }
         }
 
+        // Garde aussi une liste des titulaires pour compatibilité (ex: calcul de note)
         team.setPlayers(new ArrayList<>(newStarters));
         activeTeamRepository.save(team);
         return ResponseEntity.ok().build();

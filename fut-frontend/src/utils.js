@@ -35,6 +35,17 @@ export const CARD_COLORS = {
     mlsobjective: "#aebebb"
 };
 
+// Options de filtres de position (codes courts)
+export const POSITION_FILTERS = [
+    "GK",
+    "CB", "RB", "LB", "RWB", "LWB",
+    "CDM", "CM", "CAM",
+    "RM", "LM",
+    "RW", "LW",
+    "CF", "ST",
+    "LF", "RF"
+];
+
 const positionMap = {
     "Central Attack Midfielder": "CAM", "Right Back": "RB", "Left Back": "LB",
     "Center Back": "CB", "Striker": "ST", "Center Forward": "CF",

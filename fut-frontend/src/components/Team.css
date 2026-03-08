@@ -83,16 +83,24 @@
 }
 
 .players-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 cartes par ligne */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
     overflow-y: auto;
+    padding-right: 4px;
 }
 
 .draggable-player {
     cursor: grab;
-    transform: scale(0.5); /* Réduit la taille des cartes dans la liste */
-    transform-origin: top left;
-    margin-bottom: -80px; /* Compense l'espace vide dû au scale */
+    transform: scale(0.6); /* Réduit la taille des cartes dans la liste */
+    transform-origin: top center;
+    height: 280px; /* Réserve assez d'espace pour la carte réduite */
+}
+
+.inventory-section-title {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .pagination {

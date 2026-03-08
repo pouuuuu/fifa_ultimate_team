@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { SERVER_URL } from '../config';
 import PlayerCard from './PlayerCard';
 import './Market.css';
+import { POSITION_FILTERS, getShortPos } from '../utils';
 
 function Market() {
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const user = JSON.parse(localStorage.getItem('user'));
+    const [positionFilter, setPositionFilter] = useState([]);
 
     useEffect(() => {
         fetchListings();
@@ -20,6 +22,18 @@ function Market() {
                 setListings(data);
                 setLoading(false);
             });
+    };
+
+    const handlePositionFilterChange = (e) => {
+        const selected = Array.from(e.target.selectedOptions).map(opt => opt.value);
+        setPositionFilter(selected);
+    };
+
+    const matchesPositionFilter = (player) => {
+        if (!positionFilter || positionFilter.length === 0) return true;
+        const isGK = player.div !== undefined;
+        const shortPos = isGK ? 'GK' : getShortPos(player.position);
+        return positionFilter.includes(shortPos);
     };
 
     const handleBuy = async (listingId) => {
@@ -40,13 +54,27 @@ function Market() {
         if (res.ok) fetchListings();
     };
 
-    const mySales = listings.filter(l => l.sellerUsername === user?.username);
-    const globalMarket = listings.filter(l => l.sellerUsername !== user?.username);
+    const filteredListings = listings.filter(l => matchesPositionFilter(l.player));
+    const mySales = filteredListings.filter(l => l.sellerUsername === user?.username);
+    const globalMarket = filteredListings.filter(l => l.sellerUsername !== user?.username);
 
     if (loading) return <div className="loading">Chargement du marché...</div>;
 
     return (
         <div className="catalog-container">
+            <div className="filters-bar">
+                <label>Position(s)</label>
+                <select
+                    multiple
+                    size={5}
+                    value={positionFilter}
+                    onChange={handlePositionFilterChange}
+                >
+                    {POSITION_FILTERS.map(pos => (
+                        <option key={pos} value={pos}>{pos}</option>
+                    ))}
+                </select>
+            </div>
             <section>
                 <h2>Mes Ventes</h2>
                 <div className="player-grid">
