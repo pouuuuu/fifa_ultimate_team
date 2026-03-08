@@ -62,7 +62,7 @@ function Inventory() {
                 <div className="loading-indicator">Chargement...</div>
             ) : (
                 <>
-                    <div className="player-grid inventory-grid">
+                    <div className="player-grid">
                         {displayedCards.length > 0 ? (
                             displayedCards.map(uc => (
                                 <div key={uc.id} className="inventory-card-wrapper">

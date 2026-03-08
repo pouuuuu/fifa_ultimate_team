@@ -53,28 +53,38 @@ public class MarketDataSeeder implements CommandLineRunner {
         userRepository.save(buyer);
 
         List<Player> availablePlayers = playerRepository.findAll();
-        if (availablePlayers.size() < 3) {
-            System.out.println("Erreur : La base de données des joueurs est vide.");
+        if (availablePlayers.size() < 20) {
+            System.out.println("Erreur : Il faut au moins 20 joueurs en BDD pour ce script.");
             return;
         }
 
-        UserCard card1 = new UserCard();
-        card1.setOwner(seller);
-        card1.setPlayer(availablePlayers.get(0));
-        userCardRepository.save(card1);
+        // Génération de 10 cartes pour le vendeur
+        for (int i = 0; i < 10; i++) {
+            UserCard card = new UserCard();
+            card.setOwner(seller);
+            card.setPlayer(availablePlayers.get(i));
+            card = userCardRepository.save(card);
 
-        UserCard card2 = new UserCard();
-        card2.setOwner(seller);
-        card2.setPlayer(availablePlayers.get(1));
-        userCardRepository.save(card2);
+            // Mise en vente de 6 cartes sur les 10 possédées
+            if (i < 6) {
+                int price = 500 + (i * 1500); // Prix progressifs : 500, 2000, 3500...
+                marketService.createListing(seller.getId(), card.getId(), price);
+            }
+        }
 
-        UserCard card3 = new UserCard();
-        card3.setOwner(seller);
-        card3.setPlayer(availablePlayers.get(2));
-        userCardRepository.save(card3);
+        // Génération de 10 cartes pour l'acheteur
+        for (int i = 10; i < 20; i++) {
+            UserCard card = new UserCard();
+            card.setOwner(buyer);
+            card.setPlayer(availablePlayers.get(i));
+            card = userCardRepository.save(card);
 
-        marketService.createListing(seller.getId(), card1.getId(), 1500);
-        marketService.createListing(seller.getId(), card2.getId(), 8500);
+            // Mise en vente de 4 cartes sur les 10 possédées
+            if (i < 14) {
+                int price = 1000 + ((i - 10) * 800);
+                marketService.createListing(buyer.getId(), card.getId(), price);
+            }
+        }
 
         System.out.println("Données de test initialisées avec succès !");
     }
