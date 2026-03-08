@@ -27,6 +27,7 @@ function Navbar() {
 
             <div className="navbar-links">
                 <a href="/">Accueil</a>
+                <a href="/inventory">Mon Inventaire</a>
                 <a href="/market">Marché</a>
                 <a href="/store">Boutique</a>
             </div>
