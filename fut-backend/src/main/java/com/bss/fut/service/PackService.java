@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class PackService {
@@ -26,23 +27,23 @@ public class PackService {
     private UserCardRepository userCardRepository;
 
     @Transactional
-    public PackResponseDTO openGoldPack(Long userId) {
+    public PackResponseDTO openPack(Long userId, String packType) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-        if (user.getCoins() < 7500) {
-            throw new RuntimeException("Crédits insuffisants !");
+        int cost = getPackCost(packType);
+
+        if (user.getCoins() < cost) {
+            throw new RuntimeException("Crédits insuffisants");
         }
 
-        user.setCoins(user.getCoins() - 7500);
+        user.setCoins(user.getCoins() - cost);
         userRepository.save(user);
 
         List<Player> packContent = new ArrayList<>();
 
-        for (int i = 0; i < 12; i++) {
-            CardType type = (i == 0) ? drawRarity(true) : drawRarity(false);
-
-            Player p = getRandomPlayerByRarity(type);
+        for (int i = 0; i < 4; i++) {
+            Player p = drawPlayerForPack(packType);
             packContent.add(p);
 
             UserCard uc = new UserCard();
@@ -51,24 +52,59 @@ public class PackService {
             userCardRepository.save(uc);
         }
 
-        return new PackResponseDTO(packContent, 7500, user.getCoins());
+        return new PackResponseDTO(packContent, cost, user.getCoins());
     }
 
-    private CardType drawRarity(boolean guaranteedRare) {
+    private int getPackCost(String packType) {
+        switch (packType.toLowerCase()) {
+            case "bronze": return 1000;
+            case "silver": return 3000;
+            case "gold": return 7500;
+            case "icon": return 20000;
+            default: throw new IllegalArgumentException("Type de pack invalide");
+        }
+    }
+
+    private Player drawPlayerForPack(String packType) {
         double rand = Math.random() * 100;
-        if (guaranteedRare) return CardType.GOLDRARE;
+        CardType type = null;
+        boolean isSpecial = false;
 
-        if (rand < 70) return CardType.GOLD;
-        if (rand < 95) return CardType.GOLDRARE;
-        return CardType.LEGEND;
-    }
+        switch (packType.toLowerCase()) {
+            case "bronze":
+                if (rand < 80) type = CardType.BRONZE;
+                else if (rand < 99) type = CardType.BRONZERARE;
+                else type = CardType.SILVER;
+                break;
+            case "silver":
+                if (rand < 80) type = CardType.SILVER;
+                else if (rand < 99) type = CardType.SILVERRARE;
+                else type = CardType.GOLD;
+                break;
+            case "gold":
+                if (rand < 80) type = CardType.GOLD;
+                else if (rand < 99) type = CardType.GOLDRARE;
+                else isSpecial = true;
+                break;
+            case "icon":
+                isSpecial = true;
+                break;
+            default:
+                throw new IllegalArgumentException("Type de pack invalide");
+        }
 
-    private Player getRandomPlayerByRarity(CardType type) {
-        // 1. Récupération de l'ID aléatoire via la requête native rapide
-        Long randomPlayerId = playerRepository.findRandomPlayerIdByCardType(type.name());
+        Long playerId;
+        Random random = new Random();
 
-        // 2. Chargement de l'entité complète via JPA
-        return playerRepository.findById(randomPlayerId)
-                .orElseThrow(() -> new RuntimeException("Erreur de chargement du joueur aléatoire."));
+        if (isSpecial) {
+            List<Long> specialIds = playerRepository.findAllSpecialIds();
+            playerId = specialIds.get(random.nextInt(specialIds.size()));
+        } else {
+            List<Long> ids = playerRepository.findAllIdsByCardType(type.name());
+            playerId = ids.get(random.nextInt(ids.size()));
+        }
+
+        return playerRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("Erreur de chargement du joueur."));
     }
 }

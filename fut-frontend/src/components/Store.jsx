@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// Assurez-vous d'importer votre composant d'affichage de carte s'il gère les props correctement
 import PlayerCard from './PlayerCard';
 
 function Store() {
@@ -7,7 +6,14 @@ function Store() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleOpenGoldPack = async () => {
+    const packs = [
+        { id: 'bronze', name: 'Pack Bronze', price: 1000, img: '/images/packs/bronze_pack.png' },
+        { id: 'silver', name: 'Pack Argent', price: 3000, img: '/images/packs/silver_pack.png' },
+        { id: 'gold', name: 'Pack Or', price: 7500, img: '/images/packs/gold_pack.png' },
+        { id: 'icon', name: 'Pack Icône', price: 20000, img: '/images/packs/icon_pack.png' }
+    ];
+
+    const handleOpenPack = async (packType) => {
         const storedUser = localStorage.getItem('user');
 
         if (!storedUser) {
@@ -18,11 +24,10 @@ function Store() {
         const user = JSON.parse(storedUser);
         setLoading(true);
         setError('');
-        setOpenedPlayers([]); // Réinitialise l'affichage au cas où on ouvre plusieurs packs
+        setOpenedPlayers([]);
 
         try {
-            // Appel à l'endpoint Spring Boot existant
-            const response = await fetch(`http://localhost:8080/api/packs/open/gold?userId=${user.id}`, {
+            const response = await fetch(`http://localhost:8080/api/packs/open?userId=${user.id}&packType=${packType}`, {
                 method: 'POST'
             });
 
@@ -32,15 +37,10 @@ function Store() {
             }
 
             const data = await response.json();
-
-            // data correspond à votre PackResponseDTO (players, cost, remainingCoins)
             setOpenedPlayers(data.players);
 
-            // Mise à jour du solde de l'utilisateur dans la session locale
             user.coins = data.remainingCoins;
             localStorage.setItem('user', JSON.stringify(user));
-
-            // Permet de forcer la Navbar à mettre à jour l'affichage des crédits
             window.dispatchEvent(new Event('storage'));
 
         } catch (err) {
@@ -51,53 +51,33 @@ function Store() {
     };
 
     return (
-        <div style={{ padding: '50px', textAlign: 'center', color: 'white' }}>
+        <div className="store-container">
             <h1>Boutique des Packs</h1>
 
             {error && <div style={{ color: 'red', marginBottom: '20px' }}>{error}</div>}
 
-            <div className="pack-container" style={{ margin: '30px 0' }}>
-                <div style={{
-                    border: '2px solid gold',
-                    padding: '30px',
-                    display: 'inline-block',
-                    borderRadius: '10px',
-                    backgroundColor: '#222'
-                }}>
-                    <h2 style={{ color: 'gold' }}>Pack Or</h2>
-                    <p>Contient 12 joueurs (Au moins 1 Or Rare)</p>
-                    <p>Prix : 7 500 🪙</p>
-
-                    <button
-                        onClick={handleOpenGoldPack}
-                        disabled={loading}
-                        style={{
-                            padding: '10px 20px',
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            backgroundColor: 'gold',
-                            color: 'black',
-                            fontWeight: 'bold',
-                            border: 'none',
-                            borderRadius: '5px',
-                            marginTop: '15px'
-                        }}
+            <div className="packs-grid">
+                {packs.map((pack) => (
+                    <div
+                        key={pack.id}
+                        className={`pack-card ${loading ? 'disabled' : ''}`}
+                        onClick={() => !loading && handleOpenPack(pack.id)}
                     >
-                        {loading ? 'Ouverture...' : 'Acheter le pack'}
-                    </button>
-                </div>
+                        <img src={pack.img} alt={pack.name} className="pack-image" />
+                        <div className="pack-info">
+                            <h3>{pack.name}</h3>
+                            <p>{pack.price} crédits</p>
+                        </div>
+                    </div>
+                ))}
             </div>
 
-            {/* Affichage des cartes obtenues */}
+            {loading && <p>Ouverture en cours...</p>}
+
             {openedPlayers.length > 0 && (
                 <div style={{ marginTop: '40px' }}>
-                    <h3>Nouveaux Joueurs Obtenus !</h3>
-                    <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
-                        gap: '15px',
-                        marginTop: '20px'
-                    }}>
+                    <h3>Nouveaux Joueurs Obtenus</h3>
+                    <div className="players-grid">
                         {openedPlayers.map((player, index) => (
                             <PlayerCard key={`${player.id}-${index}`} player={player} />
                         ))}

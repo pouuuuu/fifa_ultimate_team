@@ -30,7 +30,9 @@ function Inventory() {
             setLoading(true);
             try {
                 const response = await fetch(`${SERVER_URL}/api/users/${user.id}/cards`);
+                console.log(response);
                 const data = await response.json();
+                console.log(data);
                 setUserCards(data);
             } catch (error) {
                 console.error("Erreur inventaire:", error);
@@ -42,20 +44,22 @@ function Inventory() {
     }, []);
 
     const handleSell = async (userCardId) => {
-        const price = prompt("Entrez le prix de vente (coins) :");
+        const price = prompt("Entrez le prix de vente :");
         if (!price || isNaN(price)) return;
 
         try {
-            const response = await fetch(`${SERVER_URL}/api/market/sell?sellerId=${user.id}&userCardId=${userCardId}&price=${price}`, {
-                method: 'POST'
-            });
+            const url = `${SERVER_URL}/api/market/sell?sellerId=${user.id}&userCardId=${userCardId}&price=${price}`;
+            const response = await fetch(url, { method: 'POST' });
 
             if (response.ok) {
-                alert("Carte mise en vente");
-                setUserCards(userCards.filter(uc => uc.id !== userCardId));
+                alert("Joueur mis en vente !");
+                fetchInventory();
+            } else {
+                const errorMsg = await response.text();
+                alert("Erreur : " + errorMsg);
             }
         } catch (error) {
-            console.error("Erreur lors de la vente", error);
+            alert("Impossible de contacter le serveur.");
         }
     };
 

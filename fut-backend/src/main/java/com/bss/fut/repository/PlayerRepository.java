@@ -17,6 +17,9 @@ public interface PlayerRepository extends JpaRepository<Player, Long>, JpaSpecif
     @Query("SELECT DISTINCT p.country FROM Player p WHERE p.country IS NOT NULL ORDER BY p.country")
     List<String> findDistinctNations();
 
-    @Query(value = "SELECT id FROM player WHERE card_type = :type ORDER BY RAND() LIMIT 1", nativeQuery = true)
-    Long findRandomPlayerIdByCardType(@Param("type") String type);
+    @Query(value = "SELECT id FROM player WHERE card_type = :type", nativeQuery = true)
+    List<Long> findAllIdsByCardType(@Param("type") String type);
+
+    @Query(value = "SELECT id FROM player WHERE card_type NOT IN ('BRONZE', 'BRONZERARE', 'SILVER', 'SILVERRARE', 'GOLD', 'GOLDRARE')", nativeQuery = true)
+    List<Long> findAllSpecialIds();
 }
