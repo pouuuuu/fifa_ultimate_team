@@ -23,7 +23,6 @@ public class MarketController {
     public List<MarketListingDTO> getActiveListings() {
         List<MarketListing> listings = marketListingRepository.findAllByActiveTrueOrderByCreatedAtDesc();
 
-        // Conversion des entités en DTOs
         return listings.stream().map(listing -> new MarketListingDTO(
                 listing.getId(),
                 listing.getPrice(),

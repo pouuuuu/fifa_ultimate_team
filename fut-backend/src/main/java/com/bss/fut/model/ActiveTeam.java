@@ -19,7 +19,6 @@ public class ActiveTeam {
 
     private String formation;
 
-    // Joueurs par poste pour la formation 4-3-3
     @ManyToOne
     @JoinColumn(name = "lw_card_id")
     private UserCard lw;

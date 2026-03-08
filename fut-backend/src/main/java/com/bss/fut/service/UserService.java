@@ -32,9 +32,8 @@ public class UserService {
 
         User newUser = new User();
         newUser.setUsername(request.username());
-        // Hachage du mot de passe avant sauvegarde
-        newUser.setPassword(passwordEncoder.encode(request.password()));
-        newUser.setCoins(10000); // Solde de départ
+            newUser.setPassword(passwordEncoder.encode(request.password()));
+        newUser.setCoins(10000);
 
         User savedUser = userRepository.save(newUser);
 
@@ -45,7 +44,6 @@ public class UserService {
         User user = userRepository.findByUsername(request.username())
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
 
-        // Comparaison du mot de passe envoyé avec le hash en base de données
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new RuntimeException("Mot de passe incorrect.");
         }

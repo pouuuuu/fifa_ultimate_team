@@ -12,12 +12,10 @@ public class MarketListing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Le vendeur
     @ManyToOne
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
-    // La carte physique mise en vente
     @OneToOne
     @JoinColumn(name = "user_card_id", nullable = false)
     private UserCard userCard;
@@ -25,7 +23,6 @@ public class MarketListing {
     @Column(nullable = false)
     private int price;
 
-    // Permet de savoir si l'offre est toujours disponible ou déjà vendue
     private boolean active = true;
 
     private LocalDateTime createdAt;
