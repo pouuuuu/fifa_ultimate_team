@@ -38,6 +38,12 @@ public class ActiveTeamController {
             return ResponseEntity.badRequest().body("Erreur : 11 joueurs maximum.");
         }
 
+        List<Long> cardIds = new ArrayList<>(playerPositions.values());
+        long distinctCount = cardIds.stream().distinct().count();
+        if (distinctCount != cardIds.size()) {
+            return ResponseEntity.badRequest().body("Un même joueur ne peut pas figurer deux fois dans l'équipe.");
+        }
+
         ActiveTeam team = activeTeamRepository.findByUserId(userId).orElseGet(() -> {
             ActiveTeam nt = new ActiveTeam();
             userRepository.findById(userId).ifPresent(nt::setUser);
