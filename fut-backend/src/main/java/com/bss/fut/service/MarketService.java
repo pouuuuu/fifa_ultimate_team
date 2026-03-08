@@ -72,12 +72,11 @@ public class MarketService {
         card.setOwner(buyer);
         card.setTradeable(true);
 
-        listing.setActive(false);
+        marketListingRepository.delete(listing);
 
         userRepository.save(buyer);
         userRepository.save(seller);
         userCardRepository.save(card);
-        marketListingRepository.save(listing);
     }
 
     @Transactional

@@ -31,22 +31,23 @@ function Inventory() {
         fetchFilterOptions();
     }, []);
 
+    const fetchInventory = async () => {
+        if (!user) return;
+        setLoading(true);
+        try {
+            const response = await fetch(`${SERVER_URL}/api/users/${user.id}/cards`);
+            console.log(response);
+            const data = await response.json();
+            console.log(data);
+            setUserCards(data);
+        } catch (error) {
+            console.error("Erreur inventaire:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     useEffect(() => {
-        const fetchInventory = async () => {
-            if (!user) return;
-            setLoading(true);
-            try {
-                const response = await fetch(`${SERVER_URL}/api/users/${user.id}/cards`);
-                console.log(response);
-                const data = await response.json();
-                console.log(data);
-                setUserCards(data);
-            } catch (error) {
-                console.error("Erreur inventaire:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchInventory();
     }, []);
 
@@ -66,7 +67,7 @@ function Inventory() {
                 alert("Erreur : " + errorMsg);
             }
         } catch (error) {
-            alert("Impossible de contacter le serveur.");
+            alert("Impossible de contacter le serveur :" + error);
         }
     };
 
