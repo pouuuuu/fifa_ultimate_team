@@ -1,7 +1,5 @@
 import { CARD_COLORS, getShortPos } from '../utils';
 
-// The player object prop is expected to have all player attributes
-// e.g., { cardType, rating, position, country, club, name, surname, pac, sho, ... }
 function PlayerCard({ player }) {
     const {
         cardType, rating, position, country, club, name, surname,
@@ -10,7 +8,7 @@ function PlayerCard({ player }) {
     } = player;
 
     const isGK = div !== undefined;
-    const textColor = CARD_COLORS[cardType] || '#000000'; // Fallback color
+    const textColor = CARD_COLORS[cardType] || '#FFFFFF'; // Fallback color
     const playerImageName = `${name} ${surname}`;
     const playerImageSrc = `/images/joueurs/${encodeURIComponent(playerImageName)}.png`;
     const cardBgSrc = `/images/fonds/${cardType}.png`;
