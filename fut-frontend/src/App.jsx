@@ -6,6 +6,7 @@ import Market from './components/Market';
 import Team from './components/Team';
 import Store from './components/Store';
 import Login from './components/Login';
+import Inventory from './components/Inventory';
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                     <Route path="/team" element={<Team />} />
                     <Route path="/store" element={<Store />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/inventory" element={<Inventory />} />
                 </Routes>
             </main>
         </>
