@@ -79,4 +79,27 @@ public class MarketService {
         userCardRepository.save(card);
         marketListingRepository.save(listing);
     }
+
+    @Transactional
+    public void cancelListing(Long listingId) {
+        MarketListing listing = marketListingRepository.findById(listingId)
+                .orElseThrow(() -> new RuntimeException("Offre introuvable"));
+
+        UserCard card = listing.getUserCard();
+        card.setTradeable(true);
+        userCardRepository.save(card);
+
+        marketListingRepository.delete(listing);
+    }
+
+    @Transactional
+    public void updatePrice(Long listingId, int newPrice) {
+        MarketListing listing = marketListingRepository.findById(listingId)
+                .orElseThrow(() -> new RuntimeException("Offre introuvable"));
+
+        if (newPrice <= 0) throw new RuntimeException("Le prix doit être positif");
+
+        listing.setPrice(newPrice);
+        marketListingRepository.save(listing);
+    }
 }

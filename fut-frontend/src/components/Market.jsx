@@ -1,119 +1,85 @@
-import { useState, useEffect } from 'react';
-import PlayerCard from './PlayerCard';
+import React, { useState, useEffect } from 'react';
 import { SERVER_URL } from '../config';
+import PlayerCard from './PlayerCard';
 import './Market.css';
 
 function Market() {
-    const [players, setPlayers] = useState([]);
-    const [totalPages, setTotalPages] = useState(0);
-    const [page, setPage] = useState(0);
-    const [loading, setLoading] = useState(false);
-
-    const [nameFilter, setNameFilter] = useState('');
-    const [clubFilter, setClubFilter] = useState('');
-    const [nationFilter, setNationFilter] = useState('');
-    const [typeFilter, setTypeFilter] = useState('');
-    const [options, setOptions] = useState({ clubs: [], nations: [], cardTypes: [] });
-
-    const [showClubs, setShowClubs] = useState(false);
-    const [showNations, setShowNations] = useState(false);
+    const [listings, setListings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const user = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        fetch(`${SERVER_URL}/api/players/filters`)
-            .then(res => res.json())
-            .then(data => setOptions(data))
-            .catch(error => console.error("Erreur de récupération des filtres:", error));
+        fetchListings();
     }, []);
 
-    useEffect(() => {
-        const fetchPlayers = async () => {
-            setLoading(true);
-            const params = new URLSearchParams({
-                page: page.toString(),
-                size: '12'
-            });
-
-            if (nameFilter) params.append('name', nameFilter);
-            if (clubFilter) params.append('club', clubFilter);
-            if (nationFilter) params.append('nation', nationFilter);
-            if (typeFilter) params.append('cardType', typeFilter);
-
-            try {
-                const response = await fetch(`${SERVER_URL}/api/players/search?${params.toString()}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                setPlayers(data.content);
-                setTotalPages(data.totalPages);
-            } catch (error) {
-                console.error("Erreur de récupération des joueurs:", error);
-                setPlayers([]);
-            } finally {
+    const fetchListings = () => {
+        setLoading(true);
+        fetch(`${SERVER_URL}/api/market/listings`)
+            .then(res => res.json())
+            .then(data => {
+                setListings(data);
                 setLoading(false);
-            }
-        };
-
-        fetchPlayers();
-    }, [page, nameFilter, clubFilter, nationFilter, typeFilter]);
-
-    const handleFilterChange = (setter, value) => {
-        setter(value);
-        setPage(0);
+            });
     };
 
-    const handleAutocompleteSelect = (setter, hideSuggestions, value) => {
-        handleFilterChange(setter, value);
-        hideSuggestions(false);
+    const handleBuy = async (listingId) => {
+        const res = await fetch(`${SERVER_URL}/api/market/buy?buyerId=${user.id}&listingId=${listingId}`, { method: 'POST' });
+        if (res.ok) { alert("Achat reussi !"); fetchListings(); }
+        else { const err = await res.text(); alert(err); }
     };
 
-    const handlePageChange = (newPage) => {
-        if (newPage >= 0 && newPage < totalPages) {
-            setPage(newPage);
-            window.scrollTo(0, 0);
-        }
+    const handleCancel = async (listingId) => {
+        const res = await fetch(`${SERVER_URL}/api/market/cancel?listingId=${listingId}`, { method: 'POST' });
+        if (res.ok) fetchListings();
     };
 
-    const filteredClubs = clubFilter ? options.clubs.filter(c => c.toLowerCase().includes(clubFilter.toLowerCase())).slice(0, 10) : [];
-    const filteredNations = nationFilter ? options.nations.filter(n => n.toLowerCase().includes(nationFilter.toLowerCase())).slice(0, 10) : [];
+    const handleUpdatePrice = async (listingId) => {
+        const newPrice = prompt("Nouveau prix :");
+        if (!newPrice) return;
+        const res = await fetch(`${SERVER_URL}/api/market/update-price?listingId=${listingId}&newPrice=${newPrice}`, { method: 'POST' });
+        if (res.ok) fetchListings();
+    };
+
+    const mySales = listings.filter(l => l.sellerUsername === user?.username);
+    const globalMarket = listings.filter(l => l.sellerUsername !== user?.username);
+
+    if (loading) return <div className="loading">Chargement du marché...</div>;
 
     return (
         <div className="catalog-container">
-            <h1>Marché des Transferts</h1>
-            <div className="filters">
-                <input type="text" placeholder="Nom du joueur..." value={nameFilter} onChange={(e) => handleFilterChange(setNameFilter, e.target.value)} />
-                <div className="autocomplete">
-                    <input type="text" placeholder="Chercher un club..." value={clubFilter} onFocus={() => setShowClubs(true)} onBlur={() => setTimeout(() => setShowClubs(false), 200)} onChange={(e) => handleFilterChange(setClubFilter, e.target.value)} />
-                    {showClubs && filteredClubs.length > 0 && (
-                        <ul className="suggestions">{filteredClubs.map(c => <li key={c} onMouseDown={() => handleAutocompleteSelect(setClubFilter, setShowClubs, c)}>{c}</li>)}</ul>
-                    )}
-                </div>
-                <div className="autocomplete">
-                    <input type="text" placeholder="Chercher un pays..." value={nationFilter} onFocus={() => setShowNations(true)} onBlur={() => setTimeout(() => setShowNations(false), 200)} onChange={(e) => handleFilterChange(setNationFilter, e.target.value)} />
-                    {showNations && filteredNations.length > 0 && (
-                        <ul className="suggestions">{filteredNations.map(n => <li key={n} onMouseDown={() => handleAutocompleteSelect(setNationFilter, setShowNations, n)}>{n}</li>)}</ul>
-                    )}
-                </div>
-                <select value={typeFilter} onChange={(e) => handleFilterChange(setTypeFilter, e.target.value)}>
-                    <option value="">Toutes les raretés</option>
-                    {options.cardTypes.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-            </div>
-
-            {loading ? (
-                <div className="loading-indicator">Chargement...</div>
-            ) : (
-                <>
-                    <div className="player-grid">
-                        {players.length > 0 ? players.map(p => <PlayerCard key={p.id} player={p} />) : <p className="no-results">Aucun joueur trouvé.</p>}
-                    </div>
-                    {totalPages > 1 && (
-                        <div className="pagination">
-                            <button disabled={page === 0} onClick={() => handlePageChange(page - 1)}>Précédent</button>
-                            <span> Page {page + 1} sur {totalPages} </span>
-                            <button disabled={page >= totalPages - 1} onClick={() => handlePageChange(page + 1)}>Suivant</button>
+            <section>
+                <h2>Mes Ventes</h2>
+                <div className="player-grid">
+                    {mySales.map(l => (
+                        <div key={l.listingId} className="inventory-card-wrapper">
+                            <PlayerCard player={l.player} />
+                            <div className="market-info">
+                                <p>Prix : <span>{l.price}</span> coins</p>
+                                <button className="modify-btn" onClick={() => handleUpdatePrice(l.listingId)}>Modifier</button>
+                                <button className="cancel-btn" onClick={() => handleCancel(l.listingId)}>Retirer</button>
+                            </div>
                         </div>
-                    )}
-                </>
-            )}
+                    ))}
+                    {mySales.length === 0 && <p>Aucune vente en cours.</p>}
+                </div>
+            </section>
+
+            <section>
+                <h2>Marché Global</h2>
+                <div className="player-grid">
+                    {globalMarket.map(l => (
+                        <div key={l.listingId} className="inventory-card-wrapper">
+                            <PlayerCard player={l.player} />
+                            <div className="market-info">
+                                <p>Prix : <span>{l.price}</span> coins</p>
+                                <p>Vendeur : {l.sellerUsername}</p>
+                                <button className="buy-btn" onClick={() => handleBuy(l.listingId)}>Acheter</button>
+                            </div>
+                        </div>
+                    ))}
+                    {globalMarket.length === 0 && <p>Le marché est vide.</p>}
+                </div>
+            </section>
         </div>
     );
 }
