@@ -140,7 +140,6 @@ function Team() {
             return;
         }
 
-        // Empêcher la même carte d'être placée deux fois
         const alreadyUsed = Object.entries(squad)
             .filter(([pos]) => pos !== targetPosition)
             .some(([, slot]) => slot && slot.userCardId === userCardId);

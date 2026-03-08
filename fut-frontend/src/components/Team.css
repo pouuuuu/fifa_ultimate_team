@@ -8,7 +8,7 @@
 }
 
 .pitch-container {
-    flex: 3; /* Le terrain prend plus de place */
+    flex: 3;
 }
 
 .pitch {
@@ -19,14 +19,14 @@
     position: relative;
     border: 2px solid #333;
     border-radius: 10px;
-    margin-bottom: 80px; /* Ajoute cette ligne pour repousser le bouton */
+    margin-bottom: 80px;
 }
 
 .pitch-slot {
     position: absolute;
     transform: translate(-50%, -50%);
-    width: 100px; /* Largeur pour la carte */
-    height: 140px; /* Hauteur pour la carte */
+    width: 100px;
+    height: 140px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -48,9 +48,9 @@
 .placed-player-card {
     width: 100%;
     height: 100%;
-    transform: scale(0.40); /* Réduit la taille de la carte */
+    transform: scale(0.40);
     transform-origin: top left;
-    pointer-events: none; /* Permet de cliquer à travers */
+    pointer-events: none;
 }
 
 .pitch-slot:hover .empty-slot {
@@ -58,15 +58,15 @@
 }
 
 .inventory-section {
-    flex: 1; /* La liste prend moins de place */
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 15px;
     background-color: #333232;
     padding: 15px;
     border-radius: 8px;
-    max-height: 800px; /* Hauteur maximale pour la scrollbar */
-    overflow-y: auto; /* Ajoute une scrollbar si nécessaire */
+    max-height: 800px;
+    overflow-y: auto;
 }
 
 .filters-bar {
@@ -94,9 +94,9 @@
 
 .draggable-player {
     cursor: grab;
-    transform: scale(0.6); /* Réduit la taille des cartes dans la liste */
+    transform: scale(0.6);
     transform-origin: top center;
-    height: 280px; /* Réserve assez d'espace pour la carte réduite */
+    height: 280px;
 }
 
 .inventory-section-title {
