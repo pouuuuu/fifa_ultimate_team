@@ -27,6 +27,24 @@ function Inventory() {
         fetchInventory();
     }, []);
 
+    const handleSell = async (userCardId) => {
+        const price = prompt("Entrez le prix de vente (coins) :");
+        if (!price || isNaN(price)) return;
+
+        try {
+            const response = await fetch(`${SERVER_URL}/api/market/sell?sellerId=${user.id}&userCardId=${userCardId}&price=${price}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                alert("Carte mise en vente");
+                setUserCards(userCards.filter(uc => uc.id !== userCardId));
+            }
+        } catch (error) {
+            console.error("Erreur lors de la vente", error);
+        }
+    };
+
     const totalPages = Math.ceil(userCards.length / itemsPerPage);
     const displayedCards = userCards.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 
@@ -50,7 +68,8 @@ function Inventory() {
                                 <div key={uc.id} className="inventory-card-wrapper">
                                     <PlayerCard player={uc.player} />
                                     <div className="inventory-actions">
-                                        <button className="sell-btn">Vendre</button>
+                                        <button className="sell-btn" onClick={() => handleSell(uc.id)}>Vendre</button>
+                                        <button className="squad-btn">Equipe</button>
                                     </div>
                                 </div>
                             ))

@@ -53,4 +53,24 @@ public class MarketController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<?> cancelListing(@RequestParam Long listingId) {
+        try {
+            marketService.cancelListing(listingId);
+            return ResponseEntity.ok("Annonce retirée");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/update-price")
+    public ResponseEntity<?> updatePrice(@RequestParam Long listingId, @RequestParam int newPrice) {
+        try {
+            marketService.updatePrice(listingId, newPrice);
+            return ResponseEntity.ok("Prix mis à jour");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
