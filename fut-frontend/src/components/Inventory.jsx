@@ -7,8 +7,22 @@ function Inventory() {
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(false);
     const user = JSON.parse(localStorage.getItem('user'));
-
+    const [filters, setFilters] = useState({ name: '', club: '', nation: '', cardType: '' });
+    const [options, setOptions] = useState({ clubs: [], nations: [], cardTypes: [] });
     const itemsPerPage = 12;
+
+    useEffect(() => {
+        const fetchFilterOptions = async () => {
+            try {
+                const res = await fetch(`${SERVER_URL}/api/players/filters`);
+                const data = await res.json();
+                setOptions(data);
+            } catch (e) {
+                console.error("Erreur options filtres:", e);
+            }
+        };
+        fetchFilterOptions();
+    }, []);
 
     useEffect(() => {
         const fetchInventory = async () => {
@@ -45,14 +59,34 @@ function Inventory() {
         }
     };
 
-    const totalPages = Math.ceil(userCards.length / itemsPerPage);
-    const displayedCards = userCards.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
+    const filteredCards = userCards.filter(uc => {
+        const p = uc.player;
+        const matchName =
+            !filters.name ||
+            (p.name && p.name.toLowerCase().includes(filters.name.toLowerCase())) ||
+            (p.surname && p.surname.toLowerCase().includes(filters.name.toLowerCase()));
+        const matchClub = !filters.club || p.club === filters.club;
+        const matchNation = !filters.nation || p.country === filters.nation;
+        const matchType = !filters.cardType || p.cardType === filters.cardType;
+
+        return matchName && matchClub && matchNation && matchType;
+    });
+
+    const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+    const displayedCards = filteredCards.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < totalPages) {
             setPage(newPage);
         }
     };
+
+    const handleFilterChange = (e, field) => {
+        setFilters(prev => ({ ...prev, [field]: e.target.value }));
+        setPage(0);
+    };
+
+
 
     return (
         <div className="catalog-container">
@@ -62,6 +96,26 @@ function Inventory() {
                 <div className="loading-indicator">Chargement...</div>
             ) : (
                 <>
+                    <div className="filters-bar">
+                        <input
+                            type="text"
+                            placeholder="Nom du joueur..."
+                            value={filters.name}
+                            onChange={(e) => handleFilterChange(e, 'name')}
+                        />
+                        <select value={filters.club} onChange={(e) => handleFilterChange(e, 'club')}>
+                            <option value="">Tous les clubs</option>
+                            {options.clubs?.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                        <select value={filters.nation} onChange={(e) => handleFilterChange(e, 'nation')}>
+                            <option value="">Tous les pays</option>
+                            {options.nations?.map(n => <option key={n} value={n}>{n}</option>)}
+                        </select>
+                        <select value={filters.cardType} onChange={(e) => handleFilterChange(e, 'cardType')}>
+                            <option value="">Toutes les raretés</option>
+                            {options.cardTypes?.map(ct => <option key={ct} value={ct}>{ct}</option>)}
+                        </select>
+                    </div>
                     <div className="player-grid">
                         {displayedCards.length > 0 ? (
                             displayedCards.map(uc => (

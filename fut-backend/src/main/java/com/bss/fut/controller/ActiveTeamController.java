@@ -52,23 +52,16 @@ public class ActiveTeamController {
 
             if (card != null) {
                 Player player = card.getPlayer();
-                boolean isValid = false;
+                boolean isValid = true;
 
                 if (posKey.equals("GK")) {
-                    if (player instanceof Goalkeeper) {
-                        isValid = true;
-                    }
-                } else {
-                    Position targetPos = Position.valueOf(posKey);
-                    if (player instanceof FieldPlayer) {
-                        if (((FieldPlayer) player).getPosition() == targetPos) {
-                            isValid = true;
-                        }
+                    if (!(player instanceof Goalkeeper)) {
+                        isValid = false;
                     }
                 }
 
                 if (!isValid) {
-                    return ResponseEntity.badRequest().body("Position invalide pour " + player.getName());
+                    return ResponseEntity.badRequest().body("Position invalide pour " + player.getSurname() + " " + player.getName());
                 }
                 newStarters.add(card);
             }

@@ -1,125 +1,113 @@
-.team-container {
+.team-builder-container {
     padding: 20px;
-    color: white;
+}
+
+.team-layout {
+    display: flex;
+    gap: 20px;
 }
 
 .pitch-container {
-    background-color: #222;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 30px;
+    flex: 3; /* Le terrain prend plus de place */
 }
 
-.team-header {
+.pitch {
+    background-image: url('/images/pitch.png');
+    background-size: cover;
+    background-position: center;
+    height: 600px;
+    position: relative;
+    border: 2px solid #333;
+    border-radius: 10px;
+}
+
+.pitch-slot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 100px; /* Largeur pour la carte */
+    height: 140px; /* Hauteur pour la carte */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty-slot {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    border: 2px dashed #fff;
+}
+
+.placed-player-card {
+    width: 100%;
+    height: 100%;
+    transform: scale(0.40); /* Réduit la taille de la carte */
+    transform-origin: top left;
+    pointer-events: none; /* Permet de cliquer à travers */
+}
+
+.pitch-slot:hover .empty-slot {
+    background-color: rgba(0, 255, 135, 0.5);
+}
+
+.inventory-section {
+    flex: 1; /* La liste prend moins de place */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #333232;
+    padding: 15px;
+    border-radius: 8px;
+    max-height: 800px; /* Hauteur maximale pour la scrollbar */
+    overflow-y: auto; /* Ajoute une scrollbar si nécessaire */
+}
+
+.filters-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filters-bar input,
+.filters-bar select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.players-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 cartes par ligne */
+    overflow-y: auto;
+}
+
+.draggable-player {
+    cursor: grab;
+    transform: scale(0.5); /* Réduit la taille des cartes dans la liste */
+    transform-origin: top left;
+    margin-bottom: -80px; /* Compense l'espace vide dû au scale */
+}
+
+.pagination {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
 }
-
-.save-btn {
-    padding: 10px 20px;
-    background-color: #28a745;
+.save-team-btn {
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #27ae60;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-weight: bold;
-}
-
-.football-pitch {
-    background-color: #2e7d32;
-    border: 2px solid white;
-    border-radius: 10px;
-    padding: 40px 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    min-height: 500px; /* Réduit légèrement car les cartes sont plus petites */
-}
-
-.pitch-row {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.player-slot {
-    width: 130px;  /* Ajusté pour la carte à 50% */
-    height: 180px; /* Ajusté pour la carte à 50% */
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.slot-empty {
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 2px dashed rgba(255, 255, 255, 0.5);
-}
-
-/* Wrapper pour réduire la taille de la carte à 50% */
-.card-scale-wrapper {
-    transform: scale(0.5);
-    transform-origin: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 260px;  /* Taille d'origine approximative avant scale */
-    height: 360px; /* Taille d'origine approximative avant scale */
-    flex-shrink: 0;
-}
-
-.pos-badge {
-    position: absolute;
-    top: -10px;
-    background: #111;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: bold;
-    border: 1px solid gold;
-    z-index: 2;
-}
-
-.club-container {
-    background-color: #333;
-    padding: 20px;
-    border-radius: 10px;
-}
-
-.club-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Adapté aux petites cartes */
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.club-card-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.pos-placeholder {
-    font-size: 20px;
-    font-weight: bold;
-    color: rgba(255, 255, 255, 0.3);
-}
-
-.select-btn {
-    margin-top: 5px;
-    padding: 8px;
-    width: 100%;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.select-btn.is-selected {
-    background-color: #ffc107;
-    color: black;
 }

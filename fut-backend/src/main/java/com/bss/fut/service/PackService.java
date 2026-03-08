@@ -64,6 +64,11 @@ public class PackService {
     }
 
     private Player getRandomPlayerByRarity(CardType type) {
-        return playerRepository.findRandomPlayerByCardType(type.name());
+        // 1. Récupération de l'ID aléatoire via la requête native rapide
+        Long randomPlayerId = playerRepository.findRandomPlayerIdByCardType(type.name());
+
+        // 2. Chargement de l'entité complète via JPA
+        return playerRepository.findById(randomPlayerId)
+                .orElseThrow(() -> new RuntimeException("Erreur de chargement du joueur aléatoire."));
     }
 }
