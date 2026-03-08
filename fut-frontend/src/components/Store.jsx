@@ -1,10 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PlayerCard from './PlayerCard';
+
+const preloadImage = (src) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = resolve;
+        img.src = src;
+    });
+};
 
 function Store() {
     const [openedPlayers, setOpenedPlayers] = useState([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [animatingPack, setAnimatingPack] = useState(null);
+    const [shakeSpeed, setShakeSpeed] = useState(0.5);
+
+    useEffect(() => {
+        let interval;
+        if (animatingPack) {
+            setShakeSpeed(0.5);
+            interval = setInterval(() => {
+                setShakeSpeed((prev) => Math.max(0.1, prev - 0.1));
+            }, 500);
+        }
+        return () => clearInterval(interval);
+    }, [animatingPack]);
 
     const packs = [
         { id: 'bronze', name: 'Pack Bronze', price: 1000, img: '/images/packs/bronze_pack.png' },
@@ -13,7 +35,7 @@ function Store() {
         { id: 'icon', name: 'Pack Icône', price: 20000, img: '/images/packs/icon_pack.png' }
     ];
 
-    const handleOpenPack = async (packType) => {
+    const handleOpenPack = async (pack) => {
         const storedUser = localStorage.getItem('user');
 
         if (!storedUser) {
@@ -23,11 +45,12 @@ function Store() {
 
         const user = JSON.parse(storedUser);
         setLoading(true);
+        setAnimatingPack(pack);
         setError('');
         setOpenedPlayers([]);
 
         try {
-            const response = await fetch(`http://localhost:8080/api/packs/open?userId=${user.id}&packType=${packType}`, {
+            const response = await fetch(`http://localhost:8080/api/packs/open?userId=${user.id}&packType=${pack.id}`, {
                 method: 'POST'
             });
 
@@ -37,6 +60,20 @@ function Store() {
             }
 
             const data = await response.json();
+            const imagePromises = [];
+
+            data.players.forEach(player => {
+                const playerImageName = encodeURIComponent(`${player.name} ${player.surname}`);
+                imagePromises.push(preloadImage(`/images/fonds/${player.cardType}.png`));
+                imagePromises.push(preloadImage(`/images/pays/${player.country}.png`));
+                imagePromises.push(preloadImage(`/images/clubs/${player.club}.png`));
+                imagePromises.push(preloadImage(`/images/joueurs/${playerImageName}.png`));
+            });
+
+            const minWaitPromise = new Promise(resolve => setTimeout(resolve, 3000));
+
+            await Promise.all([...imagePromises, minWaitPromise]);
+
             setOpenedPlayers(data.players);
 
             user.coins = data.remainingCoins;
@@ -47,6 +84,7 @@ function Store() {
             setError(err.message);
         } finally {
             setLoading(false);
+            setAnimatingPack(null);
         }
     };
 
@@ -61,7 +99,7 @@ function Store() {
                     <div
                         key={pack.id}
                         className={`pack-card ${loading ? 'disabled' : ''}`}
-                        onClick={() => !loading && handleOpenPack(pack.id)}
+                        onClick={() => !loading && handleOpenPack(pack)}
                     >
                         <img src={pack.img} alt={pack.name} className="pack-image" />
                         <div className="pack-info">
@@ -72,9 +110,19 @@ function Store() {
                 ))}
             </div>
 
-            {loading && <p>Ouverture en cours...</p>}
+            {animatingPack && (
+                <div className="pack-animation-overlay">
+                    <img
+                        src={animatingPack.img}
+                        alt="Animation pack"
+                        className="pack-animation-image"
+                        style={{ animation: `pulse 0.8s infinite alternate, shake ${shakeSpeed}s infinite` }}
+                    />
+                    <div className="pack-animation-text">Ouverture du {animatingPack.name}...</div>
+                </div>
+            )}
 
-            {openedPlayers.length > 0 && (
+            {openedPlayers.length > 0 && !animatingPack && (
                 <div style={{ marginTop: '40px' }}>
                     <h3>Nouveaux Joueurs Obtenus</h3>
                     <div className="players-grid">

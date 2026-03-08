@@ -38,4 +38,14 @@ public class UserController {
     public ResponseEntity<?> getUserCards(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserCards(id));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserInfo(@PathVariable Long id) {
+        try {
+            UserResponseDTO response = userService.getUserInfo(id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

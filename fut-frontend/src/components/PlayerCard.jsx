@@ -8,7 +8,7 @@ function PlayerCard({ player }) {
     } = player;
 
     const isGK = div !== undefined;
-    const textColor = CARD_COLORS[cardType] || '#FFFFFF'; // Fallback color
+    const textColor = CARD_COLORS[cardType] || '#FFFFFF';
     const playerImageName = `${name} ${surname}`;
     const playerImageSrc = `/images/joueurs/${encodeURIComponent(playerImageName)}.png`;
     const cardBgSrc = `/images/fonds/${cardType}.png`;
@@ -17,30 +17,19 @@ function PlayerCard({ player }) {
 
     return (
         <div className="player" style={{ color: textColor }}>
-            <img
-                className="card-bg"
-                src={cardBgSrc}
-                alt="background"
-                loading="lazy"
-                decoding="async"
-            />
+            <img className="card-bg" src={cardBgSrc} alt="background" />
 
             <div className="player-master-info">
                 <div className="rating">{rating}</div>
                 <div className="position">{isGK ? "GK" : getShortPos(position)}</div>
                 <div className="icons">
-                    <img className="country" src={countryIconSrc} alt={country} loading="lazy" />
-                    <img className="club" src={clubIconSrc} alt={club} loading="lazy" />
+                    <img className="country" src={countryIconSrc} alt={country} />
+                    <img className="club" src={clubIconSrc} alt={club} />
                 </div>
             </div>
 
             <div className="player-avatar">
-                <img
-                    src={playerImageSrc}
-                    alt={playerImageName}
-                    loading="lazy"
-                    decoding="async"
-                />
+                <img src={playerImageSrc} alt={playerImageName} />
             </div>
 
             <div className="player-card-bottom">

@@ -19,6 +19,7 @@
     position: relative;
     border: 2px solid #333;
     border-radius: 10px;
+    margin-bottom: 80px; /* Ajoute cette ligne pour repousser le bouton */
 }
 
 .pitch-slot {
@@ -111,8 +112,9 @@
     border-top: 1px solid #ddd;
 }
 .save-team-btn {
-    padding: 10px;
-    margin-top: 20px;
+    display: block;
+    margin: 20px auto 0;
+    padding: 10px 20px;
     background-color: #27ae60;
     color: white;
     border: none;

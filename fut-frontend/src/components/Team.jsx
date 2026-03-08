@@ -207,7 +207,7 @@ function Team() {
         { id: 'CB1', label: 'DC', top: '75%', left: '35%' },
         { id: 'CB2', label: 'DC', top: '75%', left: '65%' },
         { id: 'RB', label: 'DD', top: '70%', left: '85%' },
-        { id: 'GK', label: 'G', top: '88%', left: '50%' }
+        { id: 'GK', label: 'G', top: '80%', left: '50%' }
     ];
 
     return (

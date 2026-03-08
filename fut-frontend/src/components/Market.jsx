@@ -38,8 +38,21 @@ function Market() {
 
     const handleBuy = async (listingId) => {
         const res = await fetch(`${SERVER_URL}/api/market/buy?buyerId=${user.id}&listingId=${listingId}`, { method: 'POST' });
-        if (res.ok) { alert("Achat reussi !"); fetchListings(); }
-        else { const err = await res.text(); alert(err); }
+        if (res.ok) {
+            const listing = listings.find(l => l.listingId === listingId);
+            if (listing) {
+                user.coins -= listing.price;
+                localStorage.setItem('user', JSON.stringify(user));
+                window.dispatchEvent(new Event('storage'));
+            }
+
+            alert("Achat reussi !");
+            fetchListings();
+        }
+        else {
+            const err = await res.text();
+            alert(err);
+        }
     };
 
     const handleCancel = async (listingId) => {

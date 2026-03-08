@@ -5,13 +5,34 @@ function Navbar() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            const parsedUser = JSON.parse(storedUser);
-            setUser(parsedUser);
-        }
-    }, []);
+        const loadUserData = () => {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                const parsedUser = JSON.parse(storedUser);
+                setUser(parsedUser);
 
+                fetch(`http://localhost:8080/api/users/${parsedUser.id}`, { cache: 'no-store' })
+                    .then(res => {
+                        if (res.ok) return res.json();
+                        throw new Error("Erreur réseau");
+                    })
+                    .then(data => {
+                        setUser(data);
+                        localStorage.setItem('user', JSON.stringify(data));
+                    })
+                    .catch(err => console.error("Erreur de synchronisation :", err));
+            }
+        };
+
+        loadUserData();
+        window.addEventListener('storage', loadUserData);
+        const intervalId = setInterval(loadUserData, 10000);
+
+        return () => {
+            window.removeEventListener('storage', loadUserData);
+            clearInterval(intervalId);
+        };
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('user');

@@ -53,6 +53,12 @@ public class UserService {
         return new UserResponseDTO(user.getId(), user.getUsername(), user.getCoins());
     }
 
+    public UserResponseDTO getUserInfo(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+        return new UserResponseDTO(user.getId(), user.getUsername(), user.getCoins());
+    }
+
     public List<UserCard> getUserCards(Long userId) {
         return userCardRepository.findByOwnerId(userId);
     }
