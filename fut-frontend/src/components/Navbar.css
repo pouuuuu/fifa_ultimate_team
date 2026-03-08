@@ -47,11 +47,10 @@
 }
 
 .logout-button, .login-button {
-    background-color: #e74c3c;
+    background-color: #e7a83c;
     color: white;
     border: none;
     padding: 8px 12px;
-    border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
