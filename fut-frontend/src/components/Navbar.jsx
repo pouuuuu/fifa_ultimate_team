@@ -1,21 +1,49 @@
-import { NavLink } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import './Navbar.css';
 
 function Navbar() {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser);
+        }
+    }, []);
+
+
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        setUser(null);
+        window.location.href = '/login';
+    };
+
     return (
         <nav className="navbar">
-            <NavLink to="/" className="nav-logo">FUT App</NavLink>
-            <ul className="nav-menu">
-                <li className="nav-item">
-                    <NavLink to="/market" className={({ isActive }) => "nav-link" + (isActive ? " activated" : "")}>Marché</NavLink>
-                </li>
-                <li className="nav-item">
-                    <NavLink to="/team" className={({ isActive }) => "nav-link" + (isActive ? " activated" : "")}>Mon Équipe</NavLink>
-                </li>
-                <li className="nav-item">
-                    <NavLink to="/store" className={({ isActive }) => "nav-link" + (isActive ? " activated" : "")}>Boutique</NavLink>
-                </li>
-            </ul>
-            <NavLink to="/login" className="nav-link-button">Connexion</NavLink>
+            <div className="navbar-logo">
+                <h1><a href="/">TD FUT</a></h1>
+            </div>
+
+            <div className="navbar-links">
+                <a href="/">Accueil</a>
+                <a href="/market">Marché</a>
+                <a href="/store">Boutique</a>
+            </div>
+
+            <div className="navbar-user-info">
+                {user ? (
+                    <>
+                        <div className="user-details">
+                            <span>👤 {user.username}</span>
+                            <span>🪙 {user.coins !== undefined ? user.coins : 'N/A'}</span>
+                        </div>
+                        <button onClick={handleLogout} className="logout-button">Déconnexion</button>
+                    </>
+                ) : (
+                    <a href="/login"><button className="login-button">Se connecter</button></a>
+                )}
+            </div>
         </nav>
     );
 }
