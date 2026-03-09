@@ -35,7 +35,6 @@ export const CARD_COLORS = {
     mlsobjective: "#aebebb"
 };
 
-// Options de filtres de position (codes courts)
 export const POSITION_FILTERS = [
     "GK",
     "CB", "RB", "LB", "RWB", "LWB",
