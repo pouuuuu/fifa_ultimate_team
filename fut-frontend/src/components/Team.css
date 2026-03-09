@@ -71,8 +71,10 @@
 
 .filters-bar {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
 }
 
 .filters-bar input,

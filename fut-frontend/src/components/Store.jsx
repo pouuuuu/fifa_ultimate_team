@@ -23,7 +23,7 @@ function Store() {
             setShakeSpeed(0.5);
             interval = setInterval(() => {
                 setShakeSpeed((prev) => Math.max(0.1, prev - 0.1));
-            }, 800);
+            }, 600);
         }
         return () => clearInterval(interval);
     }, [animatingPack]);

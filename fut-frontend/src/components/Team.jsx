@@ -196,17 +196,17 @@ function Team() {
     };
 
     const pitchPositions = [
-        { id: 'LW', label: 'AG', top: '15%', left: '20%' },
-        { id: 'ST', label: 'BU', top: '10%', left: '50%' },
-        { id: 'RW', label: 'AD', top: '15%', left: '80%' },
-        { id: 'CM1', label: 'MC', top: '40%', left: '30%' },
-        { id: 'CM2', label: 'MC', top: '45%', left: '50%' },
-        { id: 'CM3', label: 'MC', top: '40%', left: '70%' },
-        { id: 'LB', label: 'DG', top: '70%', left: '15%' },
-        { id: 'CB1', label: 'DC', top: '75%', left: '35%' },
-        { id: 'CB2', label: 'DC', top: '75%', left: '65%' },
-        { id: 'RB', label: 'DD', top: '70%', left: '85%' },
-        { id: 'GK', label: 'G', top: '80%', left: '50%' }
+        { id: 'LW', label: 'LW', top: '15%', left: '20%' },
+        { id: 'ST', label: 'ST', top: '10%', left: '50%' },
+        { id: 'RW', label: 'RW', top: '15%', left: '80%' },
+        { id: 'CM1', label: 'CM', top: '40%', left: '30%' },
+        { id: 'CM2', label: 'CM', top: '45%', left: '50%' },
+        { id: 'CM3', label: 'CM', top: '40%', left: '70%' },
+        { id: 'LB', label: 'LB', top: '70%', left: '15%' },
+        { id: 'CB1', label: 'CB', top: '75%', left: '35%' },
+        { id: 'CB2', label: 'CB', top: '75%', left: '65%' },
+        { id: 'RB', label: 'RB', top: '70%', left: '85%' },
+        { id: 'GK', label: 'GK', top: '80%', left: '50%' }
     ];
 
     return (
