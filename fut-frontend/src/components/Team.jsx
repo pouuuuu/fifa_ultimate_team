@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { SERVER_URL } from '../config';
 import PlayerCard from './PlayerCard';
 import './Team.css';
@@ -12,9 +12,22 @@ function Team() {
         GK: null
     });
 
-    const [players, setPlayers] = useState([]);
+    const teamRating = useMemo(() => {
+        let total = 0;
+        let count = 0;
+
+        Object.values(squad).forEach(slot => {
+            if (slot && slot.player && slot.player.rating) {
+                total += slot.player.rating;
+                count++;
+            }
+        });
+
+        return count === 0 ? 0 : Math.floor(total / 11);
+    }, [squad]);
+
     const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
+    const [totalPages] = useState(0);
     const [filters, setFilters] = useState({
         name: '',
         club: '',
@@ -213,7 +226,14 @@ function Team() {
         <div className="team-builder-container">
             <div className="team-layout">
                 <div className="pitch-container">
-                    <h1>Création d'équipe</h1>
+                    <div className="team-header">
+                        <h1>Création d'équipe</h1>
+                        <div className="team-rating-badge">
+                            <span>Note globale</span>
+                            <span className="rating-value">{teamRating}</span>
+                        </div>
+                    </div>
+
                     <div className="pitch">
                         {pitchPositions.map(pos => (
                             <div

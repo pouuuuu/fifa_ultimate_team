@@ -12,7 +12,7 @@
 }
 
 .pitch {
-    background-image: url('/images/pitch.png');
+    background-image: url('public/images/pitch.png');
     background-size: cover;
     background-position: center;
     height: 600px;
@@ -122,4 +122,30 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.team-rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #2398bd;
+    padding: 10px 20px;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.team-rating-badge .rating-value {
+    font-size: 1.8rem;
+    background-color: #fff;
+    color: #2398bd;
+    padding: 5px 10px;
 }
