@@ -1,0 +1,151 @@
+.team-builder-container {
+    padding: 20px;
+}
+
+.team-layout {
+    display: flex;
+    gap: 20px;
+}
+
+.pitch-container {
+    flex: 3;
+}
+
+.pitch {
+    background-image: url('public/images/pitch.png');
+    background-size: cover;
+    background-position: center;
+    height: 600px;
+    position: relative;
+    border: 2px solid #333;
+    border-radius: 10px;
+    margin-bottom: 80px;
+}
+
+.pitch-slot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty-slot {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    border: 2px dashed #fff;
+}
+
+.placed-player-card {
+    width: 100%;
+    height: 100%;
+    transform: scale(0.40);
+    transform-origin: top left;
+    pointer-events: none;
+}
+
+.pitch-slot:hover .empty-slot {
+    background-color: rgba(0, 255, 135, 0.5);
+}
+
+.inventory-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #333232;
+    padding: 15px;
+    border-radius: 8px;
+    max-height: 800px;
+    overflow-y: auto;
+}
+
+.filters-bar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.filters-bar input,
+.filters-bar select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.players-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.draggable-player {
+    cursor: grab;
+    transform: scale(0.6);
+    transform-origin: top center;
+    height: 280px;
+}
+
+.inventory-section-title {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+.save-team-btn {
+    display: block;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.team-rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #2398bd;
+    padding: 10px 20px;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.team-rating-badge .rating-value {
+    font-size: 1.8rem;
+    background-color: #fff;
+    color: #2398bd;
+    padding: 5px 10px;
+}
